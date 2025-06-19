@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %} Products of {{ brand.name }} {% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="text-center mb-4">Products of {{ brand.name }}</h1>
+    <div class="row">
+        {% for product in products %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                {% if product.image %}
+                <img src="{{ url_for('static', filename='Images/Product_Images/' ~ product.image) }}" class="card-img-top" alt="{{ product.name }}" style="height:200px; object-fit:cover;">
+                {% else %}
+                <div class="card-img-top d-flex align-items-center justify-content-center bg-light" style="height:200px;">
+                    <span class="text-muted">No image</span>
+                </div>
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ product.name }}</h5>
+                    <p class="card-text">{{ product.description }}</p>
+                    <p><strong>Type:</strong> {{ product.type }}</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <a href="/brands/{{ brand.id }}" class="btn btn-secondary mt-3">Back to {{ brand.name }}</a>
+</div>
+{% endblock %}

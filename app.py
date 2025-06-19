@@ -2,61 +2,91 @@ from flask import Flask, render_template
 
 app = Flask(__name__)
 
-
 profiles = [
-    {"name": "davit",  "surname": "shengelia", "image_URL": "skami.jpg"},
-    {"name": "anna",  "surname": "iarajuli", "image_URL": "magida.png"},
-    {"name": "anna",  "surname": "grdzelishvili", "image_URL": "plates.webp"},
+    {
+        "id": 1,  "name": "davit", "surname": "shengelia", "image": "skami.jpg"
+    },
+    {
+        "id": 2,  "name": "ana", "surname": "iarajuli", "image": "magida.png"
+    },
+    {
+        "id": 3,  "name": "ana", "surname": "grdzelishvili", "image": "plates.webp"
+    }
 ]
 
-capitals = [
+
+brands = [
     {
         "id": 1,
-        "name": "New York",
-        "image": "newyork.webp",
-        "description": "Bustling U.S. metropolis, famed for skyscrapers, Times Square, and cultural diversity."
+        "name": "La-Roche Posay",
+        "image": "larocheposay.png",
+        "description": "A dermatologist-recommended skincare brand offering effective, gentle formulas with antioxidant-rich thermal spring water, ideal for sensitive, acne-prone, or reactive skin."
     },
     {
         "id": 2,
-        "name": "Tbilisi",
-        "image": "tbilisi.jpeg",
-        "description": "Georgia's vibrant capital, blends historic charm with modern life, nestled along the Mtkvari River."
+        "name": "Cetaphil",
+        "image": "cetaphil_logo.jpg",
+        "description": "Cetaphil is a gentle, dermatologist-recommended skincare brand formulated for sensitive skin, offering effective cleansers and moisturizers that hydrate, soothe, and protect the skin barrier."
     },
     {
         "id": 3,
-        "name": "Kyiv",
-        "image": "kiew.jpeg",
-        "description": "Ukraine's historic capital, rich in golden-domed churches, Soviet legacy, and Dnipro River views."
+        "name": "The Ordinary",
+        "image": "theordinary_logo.svg",
+        "description": "The Ordinary offers clinical skincare with integrity, featuring potent active ingredients in minimalist formulas at affordable prices—ideal for targeted treatments like retinol, niacinamide, and acids."
     },
     {
         "id": 4,
-        "name": "London",
-        "image": "london.jpeg",
-        "description": "UK's vibrant capital, home to Big Ben, Buckingham Palace, and a global finance, culture hub."
+        "name": "Cerave",
+        "image": "cerave_logo.png",
+        "description": "CeraVe is a dermatologist-developed skincare brand known for gentle, effective ceramide-rich formulas that restore and protect the skin barrier—perfect for dry, sensitive, or acne-prone skin."
     },
     {
         "id": 5,
-        "name": "Prague",
-        "image": "prague.jpeg",
-        "description": "Czech gem, boasts Gothic castles, Charles Bridge, and a fairytale Old Town by the Vltava."
+        "name": "Dermedic",
+        "image": "dermedic.png",
+        "description": "Dermedic creates dermatologically-tested skincare for sensitive, dry, or problematic skin, using thermal water and hypoallergenic ingredients for hydration, repair, and long-term comfort."
     },
     {
         "id": 6,
-        "name": "Reykjavik",
-        "image": "iceland.png",
-        "description": "Iceland's cozy capital, offers Nordic charm, hot springs, and Northern Lights views."
+        "name": "Avene",
+        "image": "avene_logo.png",
+        "description": "Avène specializes in soothing skincare powered by thermal spring water, clinically proven to calm sensitive, irritated, or reactive skin—recommended by dermatologists worldwide for daily gentle care."
     },
     {
         "id": 7,
-        "name": "Rome",
-        "image": "rome.jpeg",
-        "description": "Italy's eternal city, with Colosseum, Roman Forum, and Vatican’s art and history marvels."
+        "name": "Vichy",
+        "image": "vichy.jpg",
+        "description": "Vichy is a French skincare brand using volcanic thermal water and active ingredients to strengthen, hydrate, and visibly improve skin health—ideal for sensitive, aging, or stressed skin."
     },
     {
         "id": 8,
-        "name": "Bern",
+        "name": "Ahava",
+        "image": "ahava.webp",
+        "description": "AHAVA formulates mineral-rich skincare from Dead Sea ingredients, delivering natural hydration, rejuvenation, and nourishment—ideal for dry, mature, or stressed skin seeking clean, effective solutions."
+    },
+    {
+        "id": 9,
+        "name": "Cliven",
         "image": "bern.webp",
-        "description": "Swiss capital, blends medieval charm, Aare River beauty, and the iconic Bear Pit park."
+        "description": "Cliven blends tradition with modern science, offering body and skincare products enriched with natural extracts—focusing on gentle care, nourishment, and daily skin wellness."
+    },
+    {
+        "id": 10,
+        "name": "Nuxe",
+        "image": "bern.webp",
+        "description": "Nuxe combines natural botanicals with luxurious textures to create effective, sensorial skincare—famous for its Huile Prodigieuse and formulas that nourish, hydrate, and enhance skin radiance."
+    },
+    {
+        "id": 11,
+        "name": "Topicrem",
+        "image": "bern.webp",
+        "description": "Topicrem offers dermatologist-tested skincare for sensitive, dry, or atopic skin, providing gentle hydration, barrier repair, and soothing relief for all ages, including babies and adults."
+    },
+    {
+        "id": 12,
+        "name": "Bioderma",
+        "image": "bern.webp",
+        "description": "Bioderma is a science-driven skincare brand known for micellar water and skin biology-based formulas that support healthy, balanced skin—ideal for sensitive, oily, or reactive skin types."
     }
 ]
 
@@ -67,6 +97,26 @@ footer_icons = [
     {"name": "GitHub", "filename": "github.png"}
 ]
 
+products = [
+    {
+        "id": 1,
+        "type": "moisturizer",
+        "name": "Lipikar ap +m",
+        "description": "Dermatologist-tested, this body cream is safe for the whole family’s sensitive skin. It is suitable for patients undergoing chemotherapy and radiation*, helping moisturize and comfort sensitive skin.",
+        "image": ""
+    },
+    {
+        "id": 2,
+        "type": "sunscreen",
+        "name": "Anthelios Spf50+",
+        "description": "Anthelios UV Pro-Sport Sunscreen SPF 50 provides high-endurance, water-resistant protection against 98% of UVB rays with Cell-Ox Shield® Technology. Broad-spectrum sunscreen has a breathable texture.",
+        "image": ""
+    }
+
+]
+
+
+
 role = "user"
 
 @app.context_processor
@@ -75,11 +125,26 @@ def inject_footer_icons():
 
 @app.route("/")
 def home():
-    return render_template("index.html", country_capitals = capitals)
+    return render_template("index.html", brands = brands)
 
-@app.route("/<int:trip_id>")
-def trips(trip_id):
-    return  render_template("trip.html", trip=capitals[trip_id - 1], role = role)
+@app.route("/brands/<int:brand_id>")
+def brand(brand_id):
+    return render_template(
+        "brands.html",
+        brand=brands[brand_id - 1],  # passes one brand
+        role=role
+    )
+
+@app.route("/brands/<int:brand_id>/products")
+def brand_products(brand_id):
+    return render_template(
+        "products.html",
+        brand=brands[brand_id - 1],
+        role=role,
+        products=products  # pass the products list
+    )
+
+
 
 @app.route("/about")
 def about():

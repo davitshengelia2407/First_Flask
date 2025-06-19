@@ -6,16 +6,17 @@
 {% block content %}
 <main>
     <div class="mt-4">
-        <h1 class="text-center mb-4">Capitals</h1>
+        <h1 class="text-center mb-4">Brands</h1>
         <div class="row">
-            {% for capital in country_capitals %}
+            {% for brand in brands %}
             <div class="col-md-3 mb-4">
                 <div class="card h-100">
-                    <img src="{{ url_for('static', filename='Images/' ~ capital.image) }}" class="card-img-top" alt="{{ capital.name }}" height="200">
+                    <img src="{{ url_for('static', filename='Images/Brand_Logos/' ~ brand.image) }}"
+                         class="card-img-top p-1" alt="{{ brand.name }}" width="2000" height="200">
                     <div class="card-body">
-                        <h5 class="card-title">{{ capital.name }}</h5>
-                        <p class="card-text">{{ capital.description }}</p>
-                        <a href="/{{capital.id}}" class="btn btn-primary">Trip Details</a>
+                        <h5 class="card-title">{{ brand.name }}</h5>
+                        <p class="card-text">{{ brand.description }}</p>
+                        <a href="/brands/{{brand.id}}" class="btn btn-primary">Trip Details</a>
                     </div>
                 </div>
             </div>
