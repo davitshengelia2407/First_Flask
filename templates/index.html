@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %} Travel {% endblock %}
+
+
+{% block content %}
+<main>
+    <div class="mt-4">
+        <h1 class="text-center mb-4">Capitals</h1>
+        <div class="row">
+            {% for capital in country_capitals %}
+            <div class="col-md-3 mb-4">
+                <div class="card h-100">
+                    <img src="{{ url_for('static', filename='Images/' ~ capital.image) }}" class="card-img-top" alt="{{ capital.name }}" height="200">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ capital.name }}</h5>
+                        <p class="card-text">{{ capital.description }}</p>
+                        <a href="/{{capital.id}}" class="btn btn-primary">Trip Details</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</main>
+
+
+{% endblock %}
+
+
+

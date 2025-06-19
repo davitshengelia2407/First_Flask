@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %} Profile {% endblock %}
+
+
+{% block content %}
+<main>
+    <div class="user-container">
+        user_id: {{ profile_id }}
+        <div class="mb-3 row skami">
+            <h5>{{ user_profiles['name'] }}</h5>
+        </div>
+        <div class="mb-3 row">
+            <h5>{{ user_profiles['surname'] }}</h5>
+        </div>
+        <div class="mb-3 row">
+            <img src="/static/Images/{{ user_profiles['image_URL'] }}" alt="profile">
+        </div>
+    </div>
+</main>
+
+
+{% endblock %}
+

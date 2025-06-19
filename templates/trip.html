@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %} Trips {% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="text-center mb-4">Trip to {{ trip.name }}</h1>
+    <div class="row justify-content-center">
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <img src="{{ url_for('static', filename='Images/' ~ trip.image) }}" class="card-img-top" alt="{{ trip.name }}" height="300">
+                <div class="card-body">
+                    <h5 class="card-title">{{ trip.name }}</h5>
+                    <p class="card-text">{{ trip.description }}</p>
+                    <a href="/" class="btn btn-primary">Back to All Trips</a>
+                    {% if role == "admin" %}
+                    <a href="/" class="btn btn-danger">Delete Movie</a>
+                    <a href="" class="btn btn-info">Add Info</a>
+                    {% elif role == "moderator" %}
+                    <a href="" class="btn btn-info">Add Info</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,12 @@
+<footer class="bg-light mt-5 py-4">
+    <div class="text-center">
+        <ul class="list-inline d-flex justify-content-center gap-4 mb-0">
+            {% for icon in footer_icons %}
+            <li class="d-flex align-items-center gap-2">
+                <span>{{ icon.name }}</span>
+                <img src="{{ url_for('static', filename='Images/' ~ icon.filename) }}" alt="{{ icon.name }}" width="30" height="30">
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</footer>
