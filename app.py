@@ -1,18 +1,27 @@
 from flask import Flask, render_template
+from sqlalchemy.sql.functions import count
+
+from forms import  RegisterForm
+from os import path
 
 app = Flask(__name__)
+app.config["SECRET_KEY"] = "daculisaiti"
 
-profiles = [
-    {
-        "id": 1,  "name": "davit", "surname": "shengelia", "image": "skami.jpg"
-    },
-    {
-        "id": 2,  "name": "ana", "surname": "iarajuli", "image": "magida.png"
-    },
-    {
-        "id": 3,  "name": "ana", "surname": "grdzelishvili", "image": "plates.webp"
-    }
-]
+import os
+import glob
+
+import os
+import glob
+
+upload_folder = os.path.join(app.root_path, 'static', 'Images', 'Profile_Photos')
+
+# Delete all files in the upload folder
+for file_path in glob.glob(os.path.join(upload_folder, '*')):
+    try:
+        os.remove(file_path)
+        print(f"Deleted {file_path}")
+    except Exception as e:
+        print(f"Error deleting {file_path}: {e}")
 
 
 brands = [
@@ -67,25 +76,25 @@ brands = [
     {
         "id": 9,
         "name": "Cliven",
-        "image": "bern.webp",
-        "description": "Cliven blends tradition with modern science, offering body and skincare products enriched with natural extracts—focusing on gentle care, nourishment, and daily skin wellness."
+        "image": "cliven.png",
+        "description": "Cliven blends tradition with modern science, offering premium body and skincare products enriched with natural extracts—focusing on gentle care, nourishment, and daily skin wellness."
     },
     {
         "id": 10,
         "name": "Nuxe",
-        "image": "bern.webp",
+        "image": "nuxe.png",
         "description": "Nuxe combines natural botanicals with luxurious textures to create effective, sensorial skincare—famous for its Huile Prodigieuse and formulas that nourish, hydrate, and enhance skin radiance."
     },
     {
         "id": 11,
         "name": "Topicrem",
-        "image": "bern.webp",
-        "description": "Topicrem offers dermatologist-tested skincare for sensitive, dry, or atopic skin, providing gentle hydration, barrier repair, and soothing relief for all ages, including babies and adults."
+        "image": "topicrem.png",
+        "description": "Topicrem offers dermatologist-tested skincare for sensitive, dry, or atopic skin, providing effective gentle hydration, barrier repair, and soothing relief for all ages, including babies and adults."
     },
     {
         "id": 12,
         "name": "Bioderma",
-        "image": "bern.webp",
+        "image": "bioderma.png",
         "description": "Bioderma is a science-driven skincare brand known for micellar water and skin biology-based formulas that support healthy, balanced skin—ideal for sensitive, oily, or reactive skin types."
     }
 ]
@@ -115,7 +124,19 @@ products = [
 
 ]
 
+profiles = [
+    {
+        "id": 1,  "name": "davit", "surname": "shengelia", "image": "skami.jpg"
+    },
+    {
+        "id": 2,  "name": "ana", "surname": "iarajuli", "image": "magida.png"
+    },
+    {
+        "id": 3,  "name": "ana", "surname": "grdzelishvili", "image": "plates.webp"
+    }
+]
 
+users = []
 
 role = "user"
 
@@ -145,15 +166,30 @@ def brand_products(brand_id):
     )
 
 
-
 @app.route("/about")
 def about():
     return render_template("about.html")
 
-@app.route("/sign-up")
-@app.route("/register")
+@app.route("/register", methods = ["GET", "POST"])
 def register():
-    return render_template("register.html")
+    form = RegisterForm()
+    if form.validate_on_submit():
+        new_user = {
+            "username": form.username.data,
+            "password": form.password.data,
+            "birthdate": form.birthdate.data,
+            "mobile_number": form.mobile_number.data,
+            "gender": form.gender.data,
+            "country": form.country.data
+        }
+        image = form.image.data
+        directory = path.join(app.root_path, 'static', 'Images', 'Profile_Photos', image.filename)
+        image.save(directory)
+        new_user["profile_image"] = image.filename
+        users.append(new_user)
+        print(users)
+    print(form.errors)
+    return render_template("register.html", form = form)
 
 @app.route("/log-in")
 @app.route("/sign-in")
@@ -162,11 +198,7 @@ def sign_in():
 
 @app.route("/profile/<int:profile_id>")
 def profile(profile_id):
-    if profile_id == 1:
-      return render_template("profile.html", user_profiles = profiles[0], profile_id=profile_id)
-    elif profile_id == 2:
-        return render_template("profile.html", user_profiles = profiles[1], profile_id=profile_id)
-    return render_template("profile.html", user_profiles = profiles[2], profile_id=profile_id)
+    return render_template("profile.html", user_profiles = users[profile_id], profile_id=profile_id)
 
 
 

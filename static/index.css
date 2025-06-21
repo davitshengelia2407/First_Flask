@@ -2,6 +2,12 @@
     box-sizing: border-box;
     padding: 0;
     margin: 0;
+    color: grey;
+}
+
+body{
+    color:  black !important;
+
 }
 
 .logo-ul {
