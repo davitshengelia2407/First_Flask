@@ -148,6 +148,28 @@ def inject_footer_icons():
 def home():
     return render_template("index.html", brands = brands)
 
+@app.route("/register", methods = ["GET", "POST"])
+def register():
+    form = RegisterForm()
+    if form.validate_on_submit():
+        new_user = {
+            "username": form.username.data,
+            "password": form.password.data,
+            "birthdate": form.birthdate.data,
+            "mobile_number": form.mobile_number.data,
+            "gender": form.gender.data,
+            "country": form.country.data
+        }
+        image = form.image.data
+        directory = path.join(app.root_path, 'static', 'Images', 'Profile_Photos', image.filename)
+        image.save(directory)
+        new_user["profile_image"] = image.filename
+        users.append(new_user)
+        print(users)
+    print(form.errors)
+    return render_template("register.html", form = form)
+
+
 @app.route("/brands/<int:brand_id>")
 def brand(brand_id):
     return render_template(
@@ -170,26 +192,6 @@ def brand_products(brand_id):
 def about():
     return render_template("about.html")
 
-@app.route("/register", methods = ["GET", "POST"])
-def register():
-    form = RegisterForm()
-    if form.validate_on_submit():
-        new_user = {
-            "username": form.username.data,
-            "password": form.password.data,
-            "birthdate": form.birthdate.data,
-            "mobile_number": form.mobile_number.data,
-            "gender": form.gender.data,
-            "country": form.country.data
-        }
-        image = form.image.data
-        directory = path.join(app.root_path, 'static', 'Images', 'Profile_Photos', image.filename)
-        image.save(directory)
-        new_user["profile_image"] = image.filename
-        users.append(new_user)
-        print(users)
-    print(form.errors)
-    return render_template("register.html", form = form)
 
 @app.route("/log-in")
 @app.route("/sign-in")
