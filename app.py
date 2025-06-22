@@ -1,7 +1,11 @@
-from flask import Flask, render_template
-from sqlalchemy.sql.functions import count
+from tkinter import image_names
 
-from forms import  RegisterForm
+from flask import Flask, render_template, request, url_for, redirect
+from sqlalchemy.sql.functions import count
+from sqlalchemy.testing.suite.test_reflection import metadata
+from werkzeug.utils import secure_filename
+
+from forms import RegisterForm, AuctionForm
 from os import path
 
 app = Flask(__name__)
@@ -10,19 +14,22 @@ app.config["SECRET_KEY"] = "daculisaiti"
 import os
 import glob
 
-import os
-import glob
+# Define folders
+profile_folder = os.path.join(app.root_path, 'static', 'Images', 'Profile_Photos')
+auction_folder = os.path.join(app.root_path, 'static', 'Images', 'Auctions')
 
-upload_folder = os.path.join(app.root_path, 'static', 'Images', 'Profile_Photos')
+# Function to delete all files in a folder
+def delete_files_in_folder(folder_path):
+    for file_path in glob.glob(os.path.join(folder_path, '*')):
+        try:
+            os.remove(file_path)
+            print(f"Deleted {file_path}")
+        except Exception as e:
+            print(f"Error deleting {file_path}: {e}")
 
-# Delete all files in the upload folder
-for file_path in glob.glob(os.path.join(upload_folder, '*')):
-    try:
-        os.remove(file_path)
-        print(f"Deleted {file_path}")
-    except Exception as e:
-        print(f"Error deleting {file_path}: {e}")
-
+# Run deletion on both folders
+delete_files_in_folder(profile_folder)
+delete_files_in_folder(auction_folder)
 
 brands = [
     {
@@ -138,6 +145,8 @@ profiles = [
 
 users = []
 
+auction_products = []
+
 role = "user"
 
 @app.context_processor
@@ -161,13 +170,43 @@ def register():
             "country": form.country.data
         }
         image = form.image.data
-        directory = path.join(app.root_path, 'static', 'Images', 'Profile_Photos', image.filename)
+        filename = secure_filename(image.filename)
+        directory = path.join(app.root_path, 'static', 'Images', 'Profile_Photos', filename)
         image.save(directory)
         new_user["profile_image"] = image.filename
         users.append(new_user)
         print(users)
     print(form.errors)
     return render_template("register.html", form = form)
+
+
+@app.route("/add-auctions", methods=["GET", "POST"])
+def add_auction():
+    form = AuctionForm()
+    if form.validate_on_submit():
+        new_product = {
+            "product_name": form.product_name.data,
+            "description": form.description.data,
+            "type": form.type.data
+        }
+        image = form.image.data
+        filename = secure_filename(image.filename)
+        directory = path.join(app.root_path, 'static', 'Images', 'Auctions', filename)
+        image.save(directory)
+        new_product["image"] = filename
+        auction_products.append(new_product)
+        print(auction_products)
+        print(form.errors)
+        return redirect(url_for('auctions'))
+
+    return render_template("add-auctions.html", form=form)
+
+
+@app.route("/auctions")
+def auctions():
+    return render_template("auctions.html", auction_products = auction_products)
+
+
 
 
 @app.route("/brands/<int:brand_id>")
