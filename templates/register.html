@@ -3,8 +3,9 @@
 {% block title %} Register {% endblock %}
 
 
+
 {% block content %}
-<main>
+
     <div class="py-5 m-5">
         <h2 class="mb-4">Register</h2>
         <form method = "POST" enctype="multipart/form-data">
@@ -31,24 +32,13 @@
                 {{ form.confirm_password(class="form-control", placeholder = form.confirm_password.label.text) }}
             </div>
             <div class="mb-3 row">
-                {{ form.birthdate(class="form-control", placeholder = form.birthdate.label.text) }}
-            </div>
-            <div class="mb-3 row">
                 {{ form.mobile_number(class="form-control", placeholder = form.mobile_number.label.text) }}
-            </div>
-            <div class="mb-3 row">
-                {{ form.gender.label() }}
-                {{ form.gender(class="form-control") }}
-            </div>
-            <div class="mb-3 row">
-                {{ form.country(class="form-control", placeholder = form.country.label.text) }}
             </div>
             <div class="mb-3 row ">
                 {{ form.register_button(class="form-control btn btn-primary") }}
             </div>
         </form>
     </div>
-</main>
-
 {% endblock %}
+
 

@@ -10,15 +10,25 @@
                 <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href="/">Home</a>
                 </li>
-                <li class="nav-item"><a class="nav-link" href="/auctions">Auctions</a></li>
+                {% if current_user.is_authenticated %}
                 <li class="nav-item"><a class="nav-link" href="/add-auctions">Add auctions</a></li>
+                <li class="nav-item"><a class="nav-link" href="/add-brands">Add brands</a></li>
+                <li class="nav-item"><a class="nav-link" href="/auctions">Auctions</a></li>
+                {% endif %}
             </ul>
-            <form class="d-flex gap-2" role="search">
+            <form class="d-flex gap-2 me-2" role="search">
                 <input class="form-control" type="search" placeholder="Search" aria-label="Search">
                 <button class="btn btn-outline-success" type="submit">Search</button>
+            </form>
+
+            <div class="d-flex gap-2">
+                {% if current_user.is_authenticated %}
+                <a class="btn btn-outline-secondary" href="/sign-out">Log Out</a>
+                {% else %}
                 <a class="btn btn-outline-success" href="/register">Register</a>
                 <a class="btn btn-outline-success" href="/sign-in">Login</a>
-            </form>
+                {% endif %}
+            </div>
         </div>
     </div>
 </nav>

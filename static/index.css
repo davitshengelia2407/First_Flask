@@ -5,6 +5,11 @@
     color: grey;
 }
 
+html {
+    scroll-behavior: auto !important;
+}
+
+
 body{
     color:  black !important;
 

@@ -6,29 +6,20 @@
 <main>
     <div class="user-container">
         <div class="mb-3 row">
-            <h5><strong>User ID:</strong> {{ profile_id }}</h5>
+            <h5><strong>User ID:</strong> {{ user.id }}</h5>
         </div>
         <div class="mb-3 row">
-            <h5><strong>სახელი:</strong> {{ user_profiles['username'] }}</h5>
+            <h5><strong>სახელი:</strong> {{ user['username'] }}</h5>
         </div>
         <div class="mb-3 row">
-            <h5><strong>პაროლი:</strong> {{ user_profiles['password'] }}</h5>
+            {# <h5><strong>პაროლი:</strong> {{ user['password'] }}</h5> #}
         </div>
         <div class="mb-3 row">
-            <h5><strong>დაბადების თარიღი:</strong> {{ user_profiles['birthdate'] }}</h5>
-        </div>
-        <div class="mb-3 row">
-            <h5><strong>ნომერი:</strong> {{ user_profiles['mobile_number'] }}</h5>
-        </div>
-        <div class="mb-3 row">
-            <h5><strong>სქესი:</strong> {{ user_profiles['gender'] }}</h5>
-        </div>
-        <div class="mb-3 row">
-            <h5><strong>ქვეყანა:</strong> {{ user_profiles['country'] }}</h5>
+            <h5><strong>ნომერი:</strong> {{ user['mobile_number'] }}</h5>
         </div>
         <div class="mb-3 row">
             <h5 class="d-inline"><strong>ფოტო:</strong></h5>
-            <img src="/static/Images/Profile_photos/{{ user_profiles['profile_image'] }}" alt="profile_photo">
+            <img src="/static/Images/Profile_photos/{{ user['image'] }}" alt="profile_photo">
         </div>
     </div>
 </main>

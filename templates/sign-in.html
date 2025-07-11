@@ -1,43 +1,31 @@
 {% extends "base.html" %}
 
-{% block title %} Sign In {% endblock %}
-
+{% block title %}Sign In{% endblock %}
 
 {% block content %}
+{% set messages = get_flashed_messages() %}
+{% for message in messages %}
+<div class="alert alert-success mt-4">
+    {{ message }}
+</div>
+{% endfor %}
 <div class="py-5">
     <h2 class="mb-4">Sign In</h2>
-    <form>
+    <form method="POST" action="">
+        {{ form.hidden_tag() }}
+
         <div class="mb-3 row">
-            <label for="inputEmail" class="col-sm-2 col-form-label">Email</label>
-            <div class="col-sm-10">
-                <input
-                        type="email"
-                        class="form-control"
-                        id="inputEmail"
-                        placeholder="Enter your email"
-                        required
-                />
-            </div>
+            {{ form.username(class="form-control", placeholder=form.username.label.text) }}
         </div>
+
         <div class="mb-3 row">
-            <label for="inputPassword" class="col-sm-2 col-form-label">Password</label>
-            <div class="col-sm-10">
-                <input
-                        type="password"
-                        class="form-control mb-3"
-                        id="inputPassword"
-                        placeholder="Enter password"
-                        required
-                />
-            </div>
-            <div class="d-flex gap-4">
-                <button type="submit" class="btn btn-primary btn-lg fixed-width-btn">Sign In</button>
-                <button type="reset" class="btn btn-secondary btn-lg fixed-width-btn">Cancel</button>
-            </div>
+            {{ form.password(class="form-control", placeholder=form.password.label.text) }}
+        </div>
+
+        <div class="mb-3 row">
+            {{ form.login_button(class="btn btn-primary btn-lg fixed-width-btn") }}
+            <a href="{{ url_for('home') }}" class="btn btn-secondary btn-lg fixed-width-btn ms-3">Cancel</a>
         </div>
     </form>
 </div>
-
 {% endblock %}
-
-
