@@ -1,6 +1,8 @@
 from flask import render_template, url_for, redirect, flash
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.utils import secure_filename
+
+from enums import UserRole
 from forms import RegisterForm, AuctionForm, BrandForm, LoginForm
 from os import path
 import os
@@ -97,10 +99,12 @@ def register():
             username=form.username.data,
             password=form.password.data,
             mobile_number=form.mobile_number.data,
-            image=filename        )
+            image=filename,
+            role=UserRole.BASIC
+        )
         User.create(new_user)
 
-        return redirect(url_for("home"))
+        return redirect(url_for("sign_in"))
     return render_template("register.html", form=form)
 
 
@@ -215,3 +219,6 @@ def edit_brand(id):
 
     return render_template('edit-brand.html', form=form, brand=brand_obj)
 
+# @app.route("/brands/<int:id>/add-products")
+# def add_product(brand)
+#
