@@ -10,9 +10,12 @@
                 <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href="/">Home</a>
                 </li>
+                {% if current_user.is_authenticated and current_user.is_admin %}
+                <li class="nav-item"><a class="nav-link" href="/add-brands">Add brands</a></li>
+                {% endif %}
+
                 {% if current_user.is_authenticated %}
                 <li class="nav-item"><a class="nav-link" href="/add-auctions">Add auctions</a></li>
-                <li class="nav-item"><a class="nav-link" href="/add-brands">Add brands</a></li>
                 <li class="nav-item"><a class="nav-link" href="/auctions">Auctions</a></li>
                 {% endif %}
             </ul>

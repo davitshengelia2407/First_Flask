@@ -39,7 +39,7 @@ class User(db.Model, BaseModel, UserMixin):
     mobile_number = db.Column(db.String)
     role = db.Column(Enum(UserRole), nullable=False, default=UserRole.BASIC)
 
-    def __init__(self, image, username, password, mobile_number, role='basicUser'):
+    def __init__(self, image, username, password, mobile_number, role='BASIC'):
         self.image = image
         self.username = username
         self.password = generate_password_hash(password)
@@ -50,7 +50,7 @@ class User(db.Model, BaseModel, UserMixin):
         return check_password_hash(self.password, password)
     @property
     def is_admin(self):
-        return self.role == 'admin'
+        return self.role == UserRole.ADMIN
 
 @login_manager.user_loader
 def load_user(user_id):
