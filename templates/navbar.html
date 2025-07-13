@@ -12,6 +12,7 @@
                 </li>
                 {% if current_user.is_authenticated and current_user.is_admin %}
                 <li class="nav-item"><a class="nav-link" href="/add-brands">Add brands</a></li>
+                <li class="nav-item"><a class="nav-link" href="/add-product">Add products</a></li>
                 {% endif %}
 
                 {% if current_user.is_authenticated %}

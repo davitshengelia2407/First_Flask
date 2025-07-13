@@ -1,7 +1,9 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, DateField, SelectField, RadioField, SubmitField, IntegerField
-from wtforms.validators import Optional, DataRequired, length, equal_to
+from wtforms import StringField, PasswordField, DateField, SelectField, RadioField, SubmitField, IntegerField, \
+    TextAreaField
+from wtforms.validators import Optional, DataRequired, length, equal_to, Length
 from flask_wtf.file import FileField, FileAllowed, FileRequired, FileSize
+from wtforms.widgets import TextArea
 
 
 class RegisterForm(FlaskForm):
@@ -43,15 +45,43 @@ class AuctionForm(FlaskForm):
 
 
 class BrandForm(FlaskForm):
-    name = StringField("შეიყვანეთ ბრენდის სახელი", validators=[DataRequired()])
-    description =  StringField("შეიყვანეთ ბრენდის აღწერა", validators=[DataRequired()])
+    name = StringField("შეიყვანეთ ბრენდის სახელი", validators=[DataRequired(), Length(max=50)])
+    description =  TextAreaField("შეიყვანეთ ბრენდის აღწერა", validators=[DataRequired()])
     image = FileField("ატვირთეთ ბრენდის ფოტო", validators=[
+        FileRequired(message="პროდუქტის ფოტო აუცილებელია"),
         FileAllowed(['jpg', 'png', 'jpeg', 'webp', 'svg'], 'მხოლოდ ფოტოები!'),
         FileSize(max_size=20 * 1024 * 1024, message="ფოტოების მაქსიმალური ზომაა 20mb")
     ])
 
     submit_brand =  SubmitField("დამატება")
 
+
+class ProductForm(FlaskForm):
+    image = FileField("ატვირთეთ პროდუქტის ფოტო", validators=[
+        FileRequired(message="პროდუქტის ფოტო აუცილებელია"),
+        FileAllowed(['jpg', 'png', 'jpeg', 'webp', 'svg'], 'მხოლოდ ფოტოები!'),
+        FileSize(max_size=20 * 1024 * 1024, message="ფოტოების მაქსიმალური ზომაა 20mb")
+    ])
+    product_name = StringField("შეიყვანე პროდუქტის სახელი", validators=[DataRequired(), Length(max=50)])
+    product_desc = TextAreaField("შეიყვანეთ აღწერა", validators=[DataRequired()])
+    product_price = IntegerField('შეიყვანეთ პროდუქტის ფასი', validators=[DataRequired()])
+    product_type = SelectField(choices=[
+        ("", "აირჩიე ტიპი"),
+        ("დამატენიანებელი", "დამატენიანებელი"),
+        ("მზისგან დამცავი", "მზისგან დამცავი"),
+        ("დასაბანი გელი", "დასაბანი გელი"),
+        ("ექსფოლიატორი", "ექსფოლიატორი"),
+        ("ტონერი", "ტონერი"),
+        ("შრატი", "შრატი"),
+        ("მასკა", "მასკა"),
+        ("თვალის პაჩები", "თვალის პაჩები"),
+        ("თვალის კრემი", "თვალის კრემი")
+
+    ], validators=[DataRequired()])
+    product_brand = SelectField("აირჩიე ბრენდი", choices=[], coerce=int, validators=[DataRequired()])
+    product_stock = IntegerField("შეიყვანეთ მარაგი", validators=[DataRequired()])
+    discount_price = IntegerField("შეიყვანეთ ფასდაკლებული ფასი", validators=[Optional()])
+    submit_product = SubmitField('პროდუქტის დამატება')
 
 
 
