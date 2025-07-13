@@ -3,12 +3,12 @@ from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.utils import secure_filename
 
 from enums import UserRole
-from forms import RegisterForm, AuctionForm, BrandForm, LoginForm
+from forms import RegisterForm, AuctionForm, BrandForm, LoginForm, ProductForm
 from os import path
 import os
 import glob
 from app import app
-from models import Brand, User
+from models import Brand, User, Product
 from werkzeug.datastructures import FileStorage
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -34,23 +34,6 @@ footer_icons = [
     {"name": "GitHub", "filename": "github.png"}
 ]
 
-products = [
-    {
-        "id": 1,
-        "type": "moisturizer",
-        "name": "Lipikar ap +m",
-        "description": "Dermatologist-tested, this body cream is safe for the whole family’s sensitive skin. It is suitable for patients undergoing chemotherapy and radiation*, helping moisturize and comfort sensitive skin.",
-        "image": ""
-    },
-    {
-        "id": 2,
-        "type": "sunscreen",
-        "name": "Anthelios Spf50+",
-        "description": "Anthelios UV Pro-Sport Sunscreen SPF 50 provides high-endurance, water-resistant protection against 98% of UVB rays with Cell-Ox Shield® Technology. Broad-spectrum sunscreen has a breathable texture.",
-        "image": ""
-    }
-
-]
 auction_products = []
 
 role = "admin"
@@ -91,10 +74,16 @@ def register():
         return redirect(url_for('home'))
     form = RegisterForm()
     if form.validate_on_submit():
+        existing_user = User.query.filter_by(username=form.username.data).first()
+        if existing_user:
+            flash("Username already taken, try another one.")
+            return render_template("register.html", form=form)
+
         image = form.image.data
         filename = secure_filename(image.filename)
         directory = path.join(app.root_path, 'static', 'Images', 'Profile_photos', filename)
         image.save(directory)
+
         new_user = User(
             username=form.username.data,
             password=form.password.data,
@@ -107,6 +96,11 @@ def register():
         return redirect(url_for("sign_in"))
     return render_template("register.html", form=form)
 
+@app.route("/me")
+@login_required
+def me():
+    user = current_user  # full user object
+    return render_template("me.html", user=user)
 
 @app.route("/add-brands", methods=["GET", "POST"])
 @login_required
@@ -172,12 +166,17 @@ def all_brands():
 
 @app.route("/brands/<int:id>/products")
 def brand_products(id):
+    brand_obj = Brand.query.get_or_404(id)
+    products = brand_obj.products
     return render_template(
         "products.html",
-        brand= Brand.query.get_or_404(id),
-        role=role,
-        products=products
+        brand=brand_obj,
+        products=products,
+        role=current_user.role if current_user.is_authenticated else None
     )
+
+
+
 
 @app.route("/profile/<int:profile_id>")
 @login_required
@@ -219,6 +218,31 @@ def edit_brand(id):
 
     return render_template('edit-brand.html', form=form, brand=brand_obj)
 
-# @app.route("/brands/<int:id>/add-products")
-# def add_product(brand)
-#
+@app.route("/add-product", methods=["GET", "POST"])
+@login_required
+def add_product():
+    form = ProductForm()
+
+    form.product_brand.choices = [(b.id, b.name) for b in Brand.query.all()]
+
+    if form.validate_on_submit():
+        image = form.image.data
+        filename = secure_filename(image.filename)
+        image_path = path.join(app.root_path, "static", "Images", "Brand_Products", filename)
+        image.save(image_path)
+
+        new_product = Product(
+            name=form.product_name.data,
+            description=form.product_desc.data,
+            image=filename,
+            price=form.product_price.data,
+            discount_price=form.discount_price.data or None,
+            stock=form.product_stock.data,
+            type=form.product_type.data,
+            brand_id=form.product_brand.data
+        )
+
+        Product.create(new_product)
+        return redirect(url_for("home"))
+
+    return render_template("add-product.html", form=form)

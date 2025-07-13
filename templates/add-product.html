@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %} Add Product {% endblock %}
+
+{% block content %}
+<main>
+    <div class="py-5 m-5">
+        <h2 class="mb-4">Add Product</h2>
+        <form method="POST" enctype="multipart/form-data">
+            {% for errors in form.errors.values() %}
+            {% for error in errors %}
+            <div class="alert alert-danger" role="alert">
+                {{ error }}
+            </div>
+            {% endfor %}
+            {% endfor %}
+
+            {{ form.hidden_tag() }}
+
+            <div class="mb-3 row">
+                {{ form.image.label }}
+                {{ form.image(class="form-control") }}
+            </div>
+
+            <div class="mb-3 row">
+                {{ form.product_name.label }}
+                {{ form.product_name(class="form-control", placeholder=form.product_name.label.text) }}
+            </div>
+
+            <div class="mb-3 row">
+                {{ form.product_desc.label }}
+                {{ form.product_desc(class="form-control", placeholder=form.product_desc.label.text) }}
+            </div>
+
+            <div class="mb-3 row">
+                {{ form.product_price.label }}
+                {{ form.product_price(class="form-control", placeholder=form.product_price.label.text) }}
+            </div>
+
+            <div class="mb-3 row">
+                {{ form.product_type.label }}
+                {{ form.product_type(class="form-select") }}
+            </div>
+
+            <div class="mb-3 row">
+                {{ form.product_brand.label }}
+                {{ form.product_brand(class="form-select") }}
+            </div>
+
+            <div class="mb-3 row">
+                {{ form.product_stock.label }}
+                {{ form.product_stock(class="form-control", placeholder=form.product_stock.label.text) }}
+            </div>
+
+            <div class="mb-3 row">
+                {{ form.discount_price.label }}
+                {{ form.discount_price(class="form-control", placeholder=form.discount_price.label.text) }}
+            </div>
+
+            <div class="mb-3 row">
+                {{ form.submit_product(class="form-control btn btn-primary") }}
+            </div>
+        </form>
+    </div>
+</main>
+{% endblock %}
+
