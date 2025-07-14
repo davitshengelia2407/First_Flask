@@ -1,4 +1,4 @@
-from flask import render_template, url_for, redirect, flash
+from flask import render_template, url_for, redirect, flash, abort
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.utils import secure_filename
 
@@ -12,31 +12,12 @@ from models import Brand, User, Product
 from werkzeug.datastructures import FileStorage
 from werkzeug.security import generate_password_hash, check_password_hash
 
-profile_folder = os.path.join(app.root_path, 'static', 'Images', 'Profile_Photos')
-auction_folder = os.path.join(app.root_path, 'static', 'Images', 'Auctions')
-
-def delete_files_in_folder(folder_path):
-    for file_path in glob.glob(os.path.join(folder_path, '*')):
-        try:
-            os.remove(file_path)
-            print(f"Deleted {file_path}")
-        except Exception as e:
-            print(f"Error deleting {file_path}: {e}")
-
-delete_files_in_folder(profile_folder)
-delete_files_in_folder(auction_folder)
-
-
 footer_icons = [
     {"name": "Twitter", "filename": "twitter.png"},
     {"name": "Telegram", "filename": "telegram.png"},
     {"name": "Instagram", "filename": "instagram.png"},
     {"name": "GitHub", "filename": "github.png"}
 ]
-
-auction_products = []
-
-role = "admin"
 
 @app.context_processor
 def inject_footer_icons():
@@ -51,6 +32,8 @@ def home():
 
 @app.route("/sign-in", methods = ['GET', 'POST'])
 def sign_in():
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username = form.username.data).first()
@@ -63,6 +46,7 @@ def sign_in():
     return render_template("sign-in.html", form = form)
 
 @app.route('/sign-out')
+@login_required
 def sign_out():
     logout_user()
     flash('signed-out succesfuly')
@@ -105,6 +89,8 @@ def me():
 @app.route("/add-brands", methods=["GET", "POST"])
 @login_required
 def add_brands():
+    if current_user.role != UserRole.ADMIN:
+        abort(403)
     form = BrandForm()
     if form.validate_on_submit():
         new_brand = Brand(name=form.name.data, description=form.description.data)
@@ -133,8 +119,6 @@ def add_auction():
         directory = path.join(app.root_path, 'static', 'Images', 'Auctions', filename)
         image.save(directory)
         new_product["image"] = filename
-        auction_products.append(new_product)
-        print(auction_products)
         print(form.errors)
         return redirect(url_for('auctions'))
 
@@ -144,14 +128,13 @@ def add_auction():
 @app.route("/auctions")
 @login_required
 def auctions():
-    return render_template("auctions.html", auction_products = auction_products)
+    return render_template("auctions.html")
 
 @app.route("/brands/<int:id>")
 def brand(id):
     return render_template(
         "brand.html",
         brand=Brand.query.get_or_404(id),  # passes one brand
-        role=role
     )
 
 @app.route("/brands")
@@ -159,7 +142,6 @@ def all_brands():
     return render_template(
         "brands.html",
         brands= Brand.query.all(),
-        role=role
     )
 
 
@@ -187,10 +169,12 @@ def profile(profile_id):
 @app.route("/delete-brand/<int:id>")
 @login_required
 def delete_brand(id):
-    brand_id = Brand.query.get(id)
-    if not brand_id:
+    if current_user.role != UserRole.ADMIN:
+        abort(403)
+    brand_obj = Brand.query.get(id)
+    if not brand_obj:
         return "Brand not found", 404
-    brand_id.delete()
+    Brand.delete(brand_obj)
     return redirect(url_for('all_brands'))
 
 
@@ -199,6 +183,8 @@ def delete_brand(id):
 @app.route("/edit-brand/<int:id>", methods=["GET", "POST"])
 @login_required
 def edit_brand(id):
+    if current_user.role != UserRole.ADMIN:
+        abort(403)
     brand_obj = Brand.query.get_or_404(id)
     form = BrandForm(obj=brand_obj)
     form.submit_brand.label.text = "შეცვალე ბრენდი"
@@ -221,6 +207,8 @@ def edit_brand(id):
 @app.route("/add-product", methods=["GET", "POST"])
 @login_required
 def add_product():
+    if current_user.role != UserRole.ADMIN:
+        abort(403)
     form = ProductForm()
 
     form.product_brand.choices = [(b.id, b.name) for b in Brand.query.all()]
