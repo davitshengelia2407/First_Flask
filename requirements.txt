@@ -2,10 +2,7 @@ Flask
 Flask-WTF
 Flask-SQLAlchemy
 Flask-Login
-gunicorn
 Flask-Babel
 Flask-Migrate
-flask-babel
+gunicorn
 Werkzeug
-SQLAlchemy
-WTFForms
