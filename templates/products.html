@@ -34,6 +34,15 @@
                         ${{ product.price }}
                         {% endif %}
                     </p>
+                    <a href="{{ url_for('single_product', brand_id=brand.id, product_id=product.id) }}" class="btn btn-info edit-button">
+                        See Product
+                    </a>
+                    {% if current_user.is_authenticated and current_user.is_admin %}
+                    <a href="{{ url_for('edit_product', brand_id=brand.id, product_id=product.id) }}" class="btn btn-info edit-button">
+                        Edit Product
+                    </a>
+                    {% endif %}
+
                 </div>
             </div>
         </div>

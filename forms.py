@@ -48,7 +48,7 @@ class BrandForm(FlaskForm):
     name = StringField("შეიყვანეთ ბრენდის სახელი", validators=[DataRequired(), Length(max=50)])
     description =  TextAreaField("შეიყვანეთ ბრენდის აღწერა", validators=[DataRequired()])
     image = FileField("ატვირთეთ ბრენდის ფოტო", validators=[
-        FileRequired(message="პროდუქტის ფოტო აუცილებელია"),
+        Optional(),
         FileAllowed(['jpg', 'png', 'jpeg', 'webp', 'svg'], 'მხოლოდ ფოტოები!'),
         FileSize(max_size=20 * 1024 * 1024, message="ფოტოების მაქსიმალური ზომაა 20mb")
     ])
@@ -56,16 +56,18 @@ class BrandForm(FlaskForm):
     submit_brand =  SubmitField("დამატება")
 
 
+
+
 class ProductForm(FlaskForm):
     image = FileField("ატვირთეთ პროდუქტის ფოტო", validators=[
-        FileRequired(message="პროდუქტის ფოტო აუცილებელია"),
+        Optional(),
         FileAllowed(['jpg', 'png', 'jpeg', 'webp', 'svg'], 'მხოლოდ ფოტოები!'),
         FileSize(max_size=20 * 1024 * 1024, message="ფოტოების მაქსიმალური ზომაა 20mb")
     ])
-    product_name = StringField("შეიყვანე პროდუქტის სახელი", validators=[DataRequired(), Length(max=50)])
-    product_desc = TextAreaField("შეიყვანეთ აღწერა", validators=[DataRequired()])
-    product_price = IntegerField('შეიყვანეთ პროდუქტის ფასი', validators=[DataRequired()])
-    product_type = SelectField(choices=[
+    name = StringField("შეიყვანე პროდუქტის სახელი", validators=[DataRequired(), Length(max=50)])
+    description = TextAreaField("შეიყვანეთ აღწერა", validators=[DataRequired()])
+    price = IntegerField('შეიყვანეთ პროდუქტის ფასი', validators=[DataRequired()])
+    type = SelectField(choices=[
         ("", "აირჩიე ტიპი"),
         ("დამატენიანებელი", "დამატენიანებელი"),
         ("მზისგან დამცავი", "მზისგან დამცავი"),
@@ -78,8 +80,8 @@ class ProductForm(FlaskForm):
         ("თვალის კრემი", "თვალის კრემი")
 
     ], validators=[DataRequired()])
-    product_brand = SelectField("აირჩიე ბრენდი", choices=[], coerce=int, validators=[DataRequired()])
-    product_stock = IntegerField("შეიყვანეთ მარაგი", validators=[DataRequired()])
+    brand = SelectField("აირჩიე ბრენდი", choices=[], coerce=int, validators=[DataRequired()])
+    stock = IntegerField("შეიყვანეთ მარაგი", validators=[DataRequired()])
     discount_price = IntegerField("შეიყვანეთ ფასდაკლებული ფასი", validators=[Optional()])
     submit_product = SubmitField('პროდუქტის დამატება')
 

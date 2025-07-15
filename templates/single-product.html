@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}{{ one_product.name }} - {{ brand.name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <!-- Image Section -->
+        <div class="col-md-6 text-center">
+            {% if one_product.image %}
+            <img src="{{ url_for('static', filename='Images/Brand_Products/' ~ one_product.image) }}"
+                 class="img-fluid rounded shadow-sm"
+                 alt="{{ one_product.name }}"
+                 style="max-height: 400px; object-fit: contain;">
+            {% else %}
+            <div class="d-flex align-items-center justify-content-center bg-light rounded"
+                 style="height: 400px;">
+                <span class="text-muted">No Image</span>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Product Info -->
+        <div class="col-md-6">
+            <h2 class="fw-bold mb-3">{{ one_product.name }}</h2>
+            <p class="text-muted">{{ one_product.description }}</p>
+
+            <ul class="list-unstyled mb-4">
+                <li><strong>Brand:</strong> {{ brand.name }}</li>
+                <li><strong>Type:</strong> {{ one_product.type }}</li>
+                <li><strong>In Stock:</strong> {{ one_product.stock }}</li>
+            </ul>
+
+            <div class="mb-4">
+                {% if one_product.discount_price %}
+                <span class="text-muted text-decoration-line-through me-2">${{ one_product.price }}</span>
+                <span class="text-primary fw-bold h4">${{ one_product.discount_price }}</span>
+                {% else %}
+                <span class="text-primary fw-bold h4">${{ one_product.price }}</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

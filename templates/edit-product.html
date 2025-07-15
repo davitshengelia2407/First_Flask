@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
-{% block title %} {{ title }} {% endblock %}
+{% block title %} Edit Product {% endblock %}
 
 {% block content %}
 <main>
     <div class="py-5 m-5">
-        <h2 class="mb-4">{{ title }}</h2>
+        <h2 class="mb-4">Edit {{ product.product_name }}</h2>
         <form method="POST" enctype="multipart/form-data">
             {% for errors in form.errors.values() %}
             {% for error in errors %}
@@ -16,47 +16,38 @@
             {% endfor %}
 
             {{ form.hidden_tag() }}
-
             <div class="mb-3 row">
                 {{ form.image.label }}
                 {{ form.image(class="form-control") }}
             </div>
-
             <div class="mb-3 row">
-                {{ form.product_name.label }}
-                {{ form.product_name(class="form-control", placeholder=form.product_name.label.text) }}
+                {{ form.name.label }}
+                {{ form.name(class="form-control", placeholder=form.name.label.text) }}
             </div>
-
             <div class="mb-3 row">
-                {{ form.product_desc.label }}
-                {{ form.product_desc(class="form-control", placeholder=form.product_desc.label.text) }}
+                {{ form.description.label }}
+                {{ form.description(class="form-control", placeholder=form.description.label.text) }}
             </div>
-
             <div class="mb-3 row">
-                {{ form.product_price.label }}
-                {{ form.product_price(class="form-control", placeholder=form.product_price.label.text) }}
+                {{ form.price.label }}
+                {{ form.price(class="form-control", placeholder=form.price.label.text) }}
             </div>
-
             <div class="mb-3 row">
-                {{ form.product_type.label }}
-                {{ form.product_type(class="form-select") }}
+                {{ form.type.label }}
+                {{ form.type(class="form-control") }}
             </div>
-
             <div class="mb-3 row">
-                {{ form.product_brand.label }}
-                {{ form.product_brand(class="form-select") }}
+                {{ form.brand.label }}
+                {{ form.brand(class="form-control") }}
             </div>
-
             <div class="mb-3 row">
-                {{ form.product_stock.label }}
-                {{ form.product_stock(class="form-control", placeholder=form.product_stock.label.text) }}
+                {{ form.stock.label }}
+                {{ form.stock(class="form-control", placeholder=form.stock.label.text) }}
             </div>
-
             <div class="mb-3 row">
                 {{ form.discount_price.label }}
                 {{ form.discount_price(class="form-control", placeholder=form.discount_price.label.text) }}
             </div>
-
             <div class="mb-3 row">
                 {{ form.submit_product(class="form-control btn btn-primary") }}
             </div>

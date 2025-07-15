@@ -1,8 +1,11 @@
+from itertools import product
+
 from flask import render_template, url_for, redirect, flash, abort
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.utils import secure_filename
 
 from enums import UserRole
+from ext import db
 from forms import RegisterForm, AuctionForm, BrandForm, LoginForm, ProductForm
 from os import path
 import os
@@ -91,7 +94,7 @@ def me():
 def add_brands():
     if current_user.role != UserRole.ADMIN:
         abort(403)
-    form = BrandForm()
+    form = BrandForm(require_image=True)
     if form.validate_on_submit():
         new_brand = Brand(name=form.name.data, description=form.description.data)
         image = form.image.data
@@ -185,8 +188,9 @@ def delete_brand(id):
 def edit_brand(id):
     if current_user.role != UserRole.ADMIN:
         abort(403)
+
     brand_obj = Brand.query.get_or_404(id)
-    form = BrandForm(obj=brand_obj)
+    form = BrandForm(obj=brand_obj, require_image=False)
     form.submit_brand.label.text = "შეცვალე ბრენდი"
 
     if form.validate_on_submit():
@@ -199,7 +203,7 @@ def edit_brand(id):
             form.image.data.save(filepath)
             brand_obj.image = filename
 
-        Brand.save()
+        brand_obj.save()
         return redirect(url_for('brand', id=brand_obj.id))
 
     return render_template('edit-brand.html', form=form, brand=brand_obj)
@@ -234,3 +238,46 @@ def add_product():
         return redirect(url_for("home"))
 
     return render_template("add-product.html", form=form)
+
+@app.route("/brands/<int:brand_id>/products/<int:product_id>")
+def single_product(brand_id, product_id):
+    brand_obj = Brand.query.get_or_404(brand_id)
+    product_obj = Product.query.filter_by(id=product_id, brand_id=brand_id).first_or_404()
+
+    return render_template("single-product.html", one_product=product_obj, brand=brand_obj)
+
+
+@app.route("/brands/<int:brand_id>/products/edit/<int:product_id>", methods=["GET", "POST"])
+@login_required
+def edit_product(brand_id, product_id):
+    if current_user.role != UserRole.ADMIN:
+        abort(403)
+
+    brand_obj = Brand.query.get_or_404(brand_id)
+    product_obj = Product.query.filter_by(id=product_id, brand_id=brand_id).first_or_404()
+
+    form = ProductForm(obj=product_obj)
+    form.submit_product.label.text = "შეცვალე პროდუქტი"
+    form.brand.choices = [(brand_obj.id, brand_obj.name)]
+    form.brand.data = brand_obj.id
+    form.brand.render_kw = {"readonly": True, "disabled": True}
+
+    if form.validate_on_submit():
+        product_obj.name = form.name.data
+        product_obj.description = form.description.data
+        product_obj.price = form.price.data
+        product_obj.discount_price = form.discount_price.data
+        product_obj.stock = form.stock.data
+        product_obj.type = form.type.data
+        product_obj.brand_id = form.brand.data
+
+        if isinstance(form.image.data, FileStorage) and form.image.data.filename:
+            filename = secure_filename(form.image.data.filename)
+            filepath = os.path.join(app.root_path, "static", "Images", "Brand_Products", filename)
+            form.image.data.save(filepath)
+            product_obj.image = filename
+
+        product_obj.save()
+        return redirect(url_for('single_product', brand_id=brand_id, product_id=product_id))
+
+    return render_template('edit-product.html', form=form, product=product_obj, brand=brand_obj)
