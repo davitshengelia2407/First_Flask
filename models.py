@@ -100,3 +100,29 @@ class Product(db.Model, BaseModel):
 
     brand_id = db.Column(db.Integer, db.ForeignKey('brands.id'), nullable=False)
 
+
+class Basket(db.Model, BaseModel):
+    __tablename__ = "baskets"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), unique=True, nullable=False)
+
+    user = db.relationship('User', backref=db.backref('basket', uselist=False))
+    items = db.relationship(
+        'BasketItem',
+        backref='basket',
+        lazy=True,
+        cascade="all, delete-orphan"
+    )
+
+
+class BasketItem(db.Model, BaseModel):
+    __tablename__ = "basket_items"
+
+    id = db.Column(db.Integer, primary_key=True)
+    basket_id = db.Column(db.Integer, db.ForeignKey('baskets.id'), nullable=False)
+    product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False)
+    quantity = db.Column(db.Integer, nullable=False, default=1)
+
+    product = db.relationship('Product')
+

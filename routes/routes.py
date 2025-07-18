@@ -1,6 +1,6 @@
 from itertools import product
 
-from flask import render_template, url_for, redirect, flash, abort
+from flask import render_template, url_for, redirect, flash, abort, request, Blueprint
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.utils import secure_filename
 
@@ -13,7 +13,6 @@ import glob
 from app import app
 from models import Brand, User, Product
 from werkzeug.datastructures import FileStorage
-from werkzeug.security import generate_password_hash, check_password_hash
 
 footer_icons = [
     {"name": "Twitter", "filename": "twitter.png"},
@@ -42,7 +41,10 @@ def sign_in():
         user = User.query.filter_by(username = form.username.data).first()
         if user and user.check_hash(form.password.data):
             login_user(user)
-            flash('signed-in successfuly')
+            next_page = request.args.get('next')
+            flash("signed-in successfully")
+            if next_page and next_page.startswith('/'):
+                return redirect(next_page)
             return redirect(url_for('home'))
         else:
             flash("couldn't sign in")
@@ -213,25 +215,28 @@ def edit_brand(id):
 def add_product():
     if current_user.role != UserRole.ADMIN:
         abort(403)
-    form = ProductForm()
 
-    form.product_brand.choices = [(b.id, b.name) for b in Brand.query.all()]
+    form = ProductForm()
+    form.brand.choices = [(b.id, b.name) for b in Brand.query.all()]
 
     if form.validate_on_submit():
         image = form.image.data
-        filename = secure_filename(image.filename)
-        image_path = path.join(app.root_path, "static", "Images", "Brand_Products", filename)
-        image.save(image_path)
+        filename = None
+
+        if image:
+            filename = secure_filename(image.filename)
+            image_path = path.join(app.root_path, "static", "Images", "Brand_Products", filename)
+            image.save(image_path)
 
         new_product = Product(
-            name=form.product_name.data,
-            description=form.product_desc.data,
+            name=form.name.data,
+            description=form.description.data,
             image=filename,
-            price=form.product_price.data,
+            price=form.price.data,
             discount_price=form.discount_price.data or None,
-            stock=form.product_stock.data,
-            type=form.product_type.data,
-            brand_id=form.product_brand.data
+            stock=form.stock.data,
+            type=form.type.data,
+            brand_id=form.brand.data
         )
 
         Product.create(new_product)

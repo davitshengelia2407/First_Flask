@@ -39,6 +39,11 @@
                 <span class="text-primary fw-bold h4">${{ one_product.price }}</span>
                 {% endif %}
             </div>
+            <form action="{{ url_for('basket.add_to_basket', product_id=one_product.id) }}" method="POST">
+                <button type="submit" class="btn btn-success btn-lg mt-3">
+                    <i class="bi bi-cart-plus"></i> Add to Basket
+                </button>
+            </form>
         </div>
     </div>
 </div>

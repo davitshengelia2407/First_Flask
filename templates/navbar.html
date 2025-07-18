@@ -27,6 +27,9 @@
 
             <div class="d-flex gap-2">
                 {% if current_user.is_authenticated %}
+                <a class="btn btn-outline-dark" href="/basket">
+                    🧺 Basket <span class="badge bg-danger">{{ basket_count }}</span>
+                </a>
                 <a class="btn btn-outline-secondary" href="/sign-out">Log Out</a>
                 {% else %}
                 <a class="btn btn-outline-success" href="/register">Register</a>

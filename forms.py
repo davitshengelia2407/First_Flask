@@ -77,7 +77,8 @@ class ProductForm(FlaskForm):
         ("შრატი", "შრატი"),
         ("მასკა", "მასკა"),
         ("თვალის პაჩები", "თვალის პაჩები"),
-        ("თვალის კრემი", "თვალის კრემი")
+        ("თვალის კრემი", "თვალის კრემი"),
+        ("ბარიერის აღმდგენი","ბარიერის აღმდგენი")
 
     ], validators=[DataRequired()])
     brand = SelectField("აირჩიე ბრენდი", choices=[], coerce=int, validators=[DataRequired()])

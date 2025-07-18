@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Basket{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Your Basket</h2>
+    {% if items %}
+    <ul class="list-group">
+        {% for item in items %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div>
+                <strong>{{ item.product.name }}</strong>
+                — ${{ item.product.price }}
+                — <span class="badge bg-secondary">{{ item.quantity }} pcs</span>
+            </div>
+            <div class="btn-group" role="group">
+                <form method="POST" action="{{ url_for('basket.decrease_item_quantity', item_id=item.id) }}">
+                    <button class="btn btn-sm btn-outline-secondary">-</button>
+                </form>
+                <form method="POST" action="{{ url_for('basket.increase_item_quantity', item_id=item.id) }}">
+                    <button class="btn btn-sm btn-outline-secondary">+</button>
+                </form>
+                <form method="POST" action="{{ url_for('basket.remove_from_basket', item_id=item.id) }}">
+                    <button class="btn btn-sm btn-outline-danger">Delete</button>
+                </form>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+    <div class="text-end fw-bold h5">
+        Total: ${{ total }}
+    </div>    {% else %}
+    <p>Your basket is empty.</p>
+    {% endif %}
+</div>
+{% endblock %}
