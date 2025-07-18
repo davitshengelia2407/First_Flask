@@ -19,9 +19,8 @@
                         <p class="card-text">{{ auction.description }}</p>
                         <p class="text-muted mb-1">ტიპი: {{ auction.type }}</p>
                         <p class="fw-bold mb-1">${{ auction.price }}</p>
-                        <p class="text-muted small mb-2">დამატებულია: {{ auction.user.username if auction.user else 'უცნობი' }}</p>
                         <p class="text-muted small mb-2">საკონტაქტო ნომერი: {{ auction.user.mobile_number if auction.user else 'უცნობი' }}</p>
-                        <!-- <a href="/auction/{{auction.id}}" class="btn btn-outline-primary btn-sm">დეტალები</a> -->
+<!--                         <a href="/auction/{{auction.id}}" class="btn btn-outline-primary btn-sm">დეტალები</a> -->
                     </div>
                 </div>
             </div>
