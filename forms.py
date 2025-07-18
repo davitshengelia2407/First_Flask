@@ -15,7 +15,7 @@ class RegisterForm(FlaskForm):
     username = StringField('შეიყვანე სახელი', validators=[DataRequired()])
     password = PasswordField("შეიყვანე პაროლი", validators=[DataRequired(), length(min=8, max=20)])
     confirm_password = PasswordField("გაიმეორე პაროლი", validators=[DataRequired(), equal_to("password")])
-    mobile_number =  IntegerField("შეიყვანეთ ნომერი", validators=[DataRequired()])
+    mobile_number =  IntegerField("შეიყვანეთ ნომერი", validators=[DataRequired(), length(min=9)])
     register_button = SubmitField()
 
 class LoginForm(FlaskForm):
@@ -31,17 +31,25 @@ class AuctionForm(FlaskForm):
         FileRequired(message="პროდუქტის ფოტო აუცილებელია"),
         FileAllowed(['jpg', 'png', 'jpeg', 'webp', 'svg'], 'მხოლოდ ფოტოები!'),
         FileSize(max_size=20 * 1024 * 1024, message="ფოტოების მაქსიმალური ზომაა 20mb")
-                ])
-    product_name = StringField("შეიყვანე პროდუქტის სახელი", validators=[DataRequired()])
-    description = StringField("შეიყვანეთ აღწერა", validators=[DataRequired()])
-    price = IntegerField('შეიყვანეთ პროდუქტის ფასი', validators=[DataRequired()])
-    type = SelectField(choices=[
+    ])
+    product_name = StringField("პროდუქტის სახელი", validators=[DataRequired()])
+    description = StringField("აღწერა", validators=[DataRequired()])
+    price = IntegerField('საწყისი ფასი', validators=[DataRequired()])
+    type = SelectField("ტიპი", choices=[
         ("", "აირჩიე ტიპი"),
         ("დამატენიანებელი", "დამატენიანებელი"),
         ("მზისგან დამცავი", "მზისგან დამცავი"),
-        ("დასაბანი გელი", "სახის დასაბანი გელი")
+        ("დასაბანი გელი", "დასაბანი გელი"),
+        ("ექსფოლიატორი", "ექსფოლიატორი"),
+        ("ტონერი", "ტონერი"),
+        ("შრატი", "შრატი"),
+        ("მასკა", "მასკა"),
+        ("თვალის პაჩები", "თვალის პაჩები"),
+        ("თვალის კრემი", "თვალის კრემი"),
+        ("ბარიერის აღმდგენი", "ბარიერის აღმდგენი")
     ], validators=[DataRequired()])
-    submit_auction = SubmitField()
+    submit_auction = SubmitField('დაამატე აუქციონი')
+
 
 
 class BrandForm(FlaskForm):

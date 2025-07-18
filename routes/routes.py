@@ -11,7 +11,7 @@ from os import path
 import os
 import glob
 from app import app
-from models import Brand, User, Product
+from models import Brand, User, Product, Auction
 from werkzeug.datastructures import FileStorage
 
 footer_icons = [
@@ -114,17 +114,21 @@ def add_brands():
 def add_auction():
     form = AuctionForm()
     if form.validate_on_submit():
-        new_product = {
-            "product_name": form.product_name.data,
-            "description": form.description.data,
-            "type": form.type.data
-        }
         image = form.image.data
         filename = secure_filename(image.filename)
-        directory = path.join(app.root_path, 'static', 'Images', 'Auctions', filename)
-        image.save(directory)
-        new_product["image"] = filename
-        print(form.errors)
+        image_path = path.join(app.root_path, 'static', 'Images', 'Auctions', filename)
+        image.save(image_path)
+
+        auction = Auction(
+            product_name=form.product_name.data,
+            description=form.description.data,
+            image=filename,
+            price=form.price.data,
+            type=form.type.data,
+            user_id=current_user.id
+        )
+
+        Auction.create(auction)
         return redirect(url_for('auctions'))
 
     return render_template("add-auctions.html", form=form)
@@ -133,7 +137,9 @@ def add_auction():
 @app.route("/auctions")
 @login_required
 def auctions():
-    return render_template("auctions.html")
+    all_auctions = Auction.query.order_by(Auction.created_at.desc()).all()
+    return render_template("auctions.html", auctions=all_auctions)
+
 
 @app.route("/brands/<int:id>")
 def brand(id):

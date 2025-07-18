@@ -1,31 +1,32 @@
 {% extends "base.html" %}
 
-{% block title %} Products of Auction {% endblock %}
+{% block title %}აუქციონები{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <h1 class="text-center mb-4">Auction Products</h1>
-    <div class="row">
-        {% for product in auction_products %}
-        <div class="col-md-4 mb-4">
-            <div class="card h-100 shadow-sm">
-                {% if product.image %}
-                <img src="{{ url_for('static', filename='Images/Auctions/' ~ product.image) }}" class="card-img-top" alt="{{ product.product_name }}" style="height:200px; object-fit:cover;">
-                {% else %}
-                <div class="card-img-top d-flex align-items-center justify-content-center bg-light" style="height:200px;">
-                    <span class="text-muted">No image</span>
-                </div>
-                {% endif %}
-                <div class="card-body">
-                    <h5 class="card-title">{{ product.product_name }}</h5>
-                    <p class="card-text">{{ product.description }}</p>
-                    <p><strong>Type:</strong> {{ product.type }}</p>
+<main>
+    <div class="mt-4">
+        <h1 class="text-center mb-4">აუქციონები</h1>
+        <div class="row">
+            {% for auction in auctions %}
+            <div class="col-md-3 mb-4">
+                <div class="card h-100">
+                    <img src="{{ url_for('static', filename='Images/Auctions/' ~ auction.image) }}"
+                         class="card-img-top p-1"
+                         alt="{{ auction.product_name }}"
+                         width="100%" height="230" style="object-fit: cover;">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ auction.product_name }}</h5>
+                        <p class="card-text">{{ auction.description }}</p>
+                        <p class="text-muted mb-1">ტიპი: {{ auction.type }}</p>
+                        <p class="fw-bold mb-1">${{ auction.price }}</p>
+                        <p class="text-muted small mb-2">დამატებულია: {{ auction.user.username if auction.user else 'უცნობი' }}</p>
+                        <p class="text-muted small mb-2">საკონტაქტო ნომერი: {{ auction.user.mobile_number if auction.user else 'უცნობი' }}</p>
+                        <!-- <a href="/auction/{{auction.id}}" class="btn btn-outline-primary btn-sm">დეტალები</a> -->
+                    </div>
                 </div>
             </div>
+            {% endfor %}
         </div>
-        {% endfor %}
     </div>
-
-</div>
+</main>
 {% endblock %}
-}

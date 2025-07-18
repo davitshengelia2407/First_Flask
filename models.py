@@ -126,3 +126,20 @@ class BasketItem(db.Model, BaseModel):
 
     product = db.relationship('Product')
 
+
+class Auction(db.Model, BaseModel):
+    __tablename__ = "auctions"
+
+    id = db.Column(db.Integer, primary_key=True)
+    product_name = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.String(1000), nullable=False)
+    image = db.Column(db.String(255), nullable=False)
+    price = db.Column(db.Integer, nullable=False)
+    type = db.Column(db.String(50), nullable=False)
+
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+
+    user = db.relationship("User", backref="auctions")
+
+
