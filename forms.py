@@ -15,7 +15,7 @@ class RegisterForm(FlaskForm):
     username = StringField('შეიყვანე სახელი', validators=[DataRequired()])
     password = PasswordField("შეიყვანე პაროლი", validators=[DataRequired(), length(min=8, max=20)])
     confirm_password = PasswordField("გაიმეორე პაროლი", validators=[DataRequired(), equal_to("password")])
-    mobile_number =  IntegerField("შეიყვანეთ ნომერი", validators=[DataRequired(), length(min=9)])
+    mobile_number =  IntegerField("შეიყვანეთ ნომერი", validators=[DataRequired()])
     register_button = SubmitField()
 
 class LoginForm(FlaskForm):

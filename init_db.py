@@ -8,6 +8,6 @@ with app.app_context():
     db.create_all()
 
 
-    admin = User(password='adminpass', username='admin', role=UserRole.BASIC, image='5', mobile_number='5')
+    admin = User(password='adminpass', username='admin', role=UserRole.ADMIN, image='5', mobile_number='5')
     db.session.add(admin)
     db.session.commit()

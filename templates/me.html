@@ -8,7 +8,7 @@
         <div class="col-md-6 text-center">
             <h2 class="mb-4">Ჩემი პროფილი</h2>
 
-            <img src="{{ url_for('static', filename='Images/User_Photos/' + user.image) }}"
+            <img src="{{ url_for('static', filename='Images/Profile_photos/' + user.image) }}"
                  alt="Პროფილის ფოტო"
                  class="img-thumbnail mb-3"
                  style="width: 150px; height: 150px; object-fit: cover;">
@@ -16,7 +16,9 @@
             <ul class="list-group text-start">
                 <li class="list-group-item"><strong>სახელი:</strong> {{ user.username }}</li>
                 <li class="list-group-item"><strong>ნომერი:</strong> {{ user.mobile_number }}</li>
+                {% if current_user.is_admin %}
                 <li class="list-group-item"><strong>როლი:</strong> {{ user.role }}</li>
+                {% endif %}
                 <li class="list-group-item"><strong>შექმნის თარიღი:</strong> {{ user.created_at }}</li>
             </ul>
         </div>
