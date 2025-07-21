@@ -5,5 +5,4 @@ Flask-Login
 Flask-Babel
 Flask-Migrate
 gunicorn
-Werkzeug
 python-dotenv
