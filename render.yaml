@@ -1,9 +1,30 @@
+#services:
+#  - type: web
+#    name: ordskin
+#    env: python
+#    buildCommand: pip install -r requirements.txt
+#    startCommand: |
+#      python init_db.py &&
+#      flask db upgrade &&
+#      gunicorn run:app
+
+databases:
+  - name: ordskin
+    databaseName: flask_db
+    user: root
+
 services:
   - type: web
     name: ordskin
     env: python
     buildCommand: pip install -r requirements.txt
     startCommand: |
-      python init_db.py &&
       flask db upgrade &&
       gunicorn run:app
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: ordskin
+          property: connectionString
+      - key: FLASK_ENV
+        value: production
