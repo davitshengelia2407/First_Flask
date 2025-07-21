@@ -1,12 +1,19 @@
+import os
+from dotenv import load_dotenv
+
 from flask import Flask, request
 from flask_login import LoginManager, current_user
 from flask_sqlalchemy import SQLAlchemy
 from flask_babel import Babel
 from flask_migrate import Migrate
 
+load_dotenv()
+
 app = Flask(__name__)
-app.config["SECRET_KEY"] = "daculisaiti"
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///flask-sqlite.db"
+
+app.config["SECRET_KEY"] = os.environ['SECRET_KEY']
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ['DATABASE_URL']
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config['BABEL_DEFAULT_LOCALE'] = 'en'
 app.config['BABEL_SUPPORTED_LOCALES'] = ['en', 'ka']
 
@@ -29,4 +36,3 @@ def inject_basket_count():
         count = sum(item.quantity for item in basket.items) if basket else 0
         return dict(basket_count=count)
     return dict(basket_count=0)
-
