@@ -45,6 +45,15 @@
                         Delete
                     </a>
                     {% endif %}
+                    <form action="{{ url_for('basket.add_to_basket', product_id=product.id) }}" method="post" class="d-inline">
+                        <input type="hidden" name="brand_id" value="{{ brand.id }}">
+                        <input type="hidden" name="next" value="{{ request.path }}">
+                        <button class="btn btn-outline-info btn-sm mt-2" type="submit">
+                            <img src="https://ordskin-files.s3.us-east-1.amazonaws.com/Icons/cart.png"
+                                 alt="Add to cart" width="20" height="20">
+                        </button>
+                    </form>
+
                 </div>
             </div>
         </div>
