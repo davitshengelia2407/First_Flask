@@ -11,7 +11,7 @@
         <div class="col-md-4 col-sm-6 mb-4">
             <div class="card h-100 border-0 shadow-sm product-card transition">
                 {% if product.image %}
-                <img src="{{ url_for('static', filename='Images/Brand_Products/' ~ product.image) }}"
+                <img src="{{ product.image }}"
                      class="card-img-top img-fluid p-3"
                      alt="{{ product.name }}"
                      style="height: 250px; object-fit: contain;">
@@ -31,7 +31,7 @@
                         <span class="text-decoration-line-through text-muted me-1">${{ product.price }}</span>
                         ${{ product.discount_price }}
                         {% else %}
-                        ${{ product.price }}
+                        ${{ "%.2f"|format(product.price) }}
                         {% endif %}
                     </p>
                     <a href="{{ url_for('single_product', brand_id=brand.id, product_id=product.id) }}" class="btn btn-info edit-button">
@@ -41,6 +41,7 @@
                     <a href="{{ url_for('edit_product', brand_id=brand.id, product_id=product.id) }}" class="btn btn-info edit-button">
                         Edit Product
                     </a>
+                    <a href="{{ url_for('delete_product', product_id=product.id) }}" class="btn btn-outline-danger btn-sm">Delete</a>
                     {% endif %}
 
                 </div>

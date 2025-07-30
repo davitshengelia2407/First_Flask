@@ -10,10 +10,10 @@
             {% for auction in auctions %}
             <div class="col-md-3 mb-4">
                 <div class="card h-100">
-                    <img src="{{ url_for('static', filename='Images/Auctions/' ~ auction.image) }}"
+                    <img src="{{ auction.image }}"
                          class="card-img-top p-1"
                          alt="{{ auction.product_name }}"
-                         width="100%" height="230" style="object-fit: cover;">
+                         width="100%" height="300">
                     <div class="card-body">
                         <h5 class="card-title">{{ auction.product_name }}</h5>
                         <p class="card-text">{{ auction.description }}</p>

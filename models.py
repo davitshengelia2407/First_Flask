@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+from email.policy import default
 
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -93,11 +94,12 @@ class Product(db.Model, BaseModel):
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.String(1000), nullable=False)
     image = db.Column(db.String(255), nullable=False)
-    price = db.Column(db.Integer, nullable=False)
-    discount_price = db.Column(db.Integer, nullable=True)
+    price = db.Column(db.Float, nullable=False)
+    discount_price = db.Column(db.Float, nullable=True)
     stock = db.Column(db.Integer, nullable=False)
     type = db.Column(db.String(50), nullable=False)
-
+    hidden = db.Column(db.Boolean, default=False)
+    purchased_times = db.Column(db.Integer, default=0)
     brand_id = db.Column(db.Integer, db.ForeignKey('brands.id'), nullable=False)
 
 
@@ -134,12 +136,30 @@ class Auction(db.Model, BaseModel):
     product_name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.String(1000), nullable=False)
     image = db.Column(db.String(255), nullable=False)
-    price = db.Column(db.Integer, nullable=False)
+    price = db.Column(db.Float, nullable=False)
     type = db.Column(db.String(50), nullable=False)
 
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
     user = db.relationship("User", backref="auctions")
+
+
+class Card(db.Model, BaseModel):
+    __tablename__ = 'cards'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+
+    card_number_last4 = db.Column(db.String(4), nullable=False)
+    card_brand = db.Column(db.String(20), nullable=False)
+    expiry = db.Column(db.String(5), nullable=False)
+    token = db.Column(db.String(255), nullable=True)
+
+    user = db.relationship('User', backref='cards')
+
+    __table_args__ = (
+        db.UniqueConstraint('user_id', 'card_number_last4', 'expiry', name='unique_user_card'),
+    )
+
 
 
