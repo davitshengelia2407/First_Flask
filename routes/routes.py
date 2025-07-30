@@ -20,6 +20,11 @@ from app import app
 from models import Brand, User, Product, Auction, Card
 from werkzeug.datastructures import FileStorage
 
+from flask import Blueprint
+
+routes = Blueprint("routes", __name__)
+
+
 footer_icons = [
     {"name": "Twitter", "filename": "twitter.png"},
     {"name": "Telegram", "filename": "telegram.png"},
@@ -31,14 +36,14 @@ footer_icons = [
 def inject_footer_icons():
     return dict(footer_icons=footer_icons)
 
-@app.route("/")
+@routes.route("/")
 def home():
     return render_template(
         "index.html",
         brands = Brand.query.all()
     )
 
-@app.route("/sign-in", methods = ['GET', 'POST'])
+@routes.route("/sign-in", methods = ['GET', 'POST'])
 def sign_in():
     if current_user.is_authenticated:
         return redirect(url_for('home'))
@@ -56,14 +61,14 @@ def sign_in():
             flash("couldn't sign in")
     return render_template("sign-in.html", form = form)
 
-@app.route('/sign-out')
+@routes.route('/sign-out')
 @login_required
 def sign_out():
     logout_user()
     flash('signed-out succesfuly')
     return redirect(url_for('home'))
 
-@app.route("/register", methods=["GET", "POST"])
+@routes.route("/register", methods=["GET", "POST"])
 def register():
     if current_user.is_authenticated:
         return redirect(url_for('home'))
@@ -99,7 +104,7 @@ def register():
 
     return render_template("register.html", form=form)
 
-@app.route("/me", methods=["GET", "POST"])
+@routes.route("/me", methods=["GET", "POST"])
 @login_required
 def me():
     form = ChangePasswordForm()
@@ -119,7 +124,7 @@ def me():
 
 
 
-@app.route("/add-brands", methods=["GET", "POST"])
+@routes.route("/add-brands", methods=["GET", "POST"])
 @login_required
 def add_brands():
     if current_user.role != UserRole.ADMIN:
@@ -148,7 +153,7 @@ def add_brands():
 
     return render_template("add-brands.html", form=form)
 
-@app.route("/add-auctions", methods=["GET", "POST"])
+@routes.route("/add-auctions", methods=["GET", "POST"])
 @login_required
 def add_auction():
     form = AuctionForm()
@@ -182,21 +187,21 @@ def add_auction():
     return render_template("add-auctions.html", form=form)
 
 
-@app.route("/auctions")
+@routes.route("/auctions")
 @login_required
 def auctions():
     all_auctions = Auction.query.order_by(Auction.created_at.desc()).all()
     return render_template("auctions.html", auctions=all_auctions)
 
 
-@app.route("/brands/<int:id>")
+@routes.route("/brands/<int:id>")
 def brand(id):
     return render_template(
         "brand.html",
         brand=Brand.query.get_or_404(id),  # passes one brand
     )
 
-@app.route("/brands")
+@routes.route("/brands")
 def all_brands():
     return render_template(
         "brands.html",
@@ -205,7 +210,7 @@ def all_brands():
 
 
 
-@app.route("/brands/<int:id>/products")
+@routes.route("/brands/<int:id>/products")
 def brand_products(id):
     brand_obj = Brand.query.get_or_404(id)
     products = brand_obj.products
@@ -219,14 +224,14 @@ def brand_products(id):
 
 
 
-@app.route("/profile/<int:profile_id>")
+@routes.route("/profile/<int:profile_id>")
 @login_required
 def profile(profile_id):
     user = User.query.get_or_404(profile_id)
     return render_template("profile.html", user=user)
 
 
-@app.route("/delete-brand/<int:id>")
+@routes.route("/delete-brand/<int:id>")
 @login_required
 def delete_brand(id):
     if current_user.role != UserRole.ADMIN:
@@ -239,7 +244,7 @@ def delete_brand(id):
 
 from werkzeug.datastructures import FileStorage
 
-@app.route("/edit-brand/<int:id>", methods=["GET", "POST"])
+@routes.route("/edit-brand/<int:id>", methods=["GET", "POST"])
 @login_required
 def edit_brand(id):
     if current_user.role != UserRole.ADMIN:
@@ -269,7 +274,7 @@ def edit_brand(id):
     return render_template('edit-brand.html', form=form, brand=brand_obj)
 
 
-@app.route("/add-product", methods=["GET", "POST"])
+@routes.route("/add-product", methods=["GET", "POST"])
 @login_required
 def add_product():
     if current_user.role != UserRole.ADMIN:
@@ -306,7 +311,7 @@ def add_product():
 
     return render_template("add-product.html", form=form)
 
-# @app.route("/add-brands", methods=["GET", "POST"])
+# @routes.route("/add-brands", methods=["GET", "POST"])
 # @login_required
 # def add_brands():
 #     if current_user.role != UserRole.ADMIN:
@@ -335,7 +340,7 @@ def add_product():
 #
 #     return render_template("add-brands.html", form=form)
 
-@app.route("/brands/<int:brand_id>/products/<int:product_id>")
+@routes.route("/brands/<int:brand_id>/products/<int:product_id>")
 def single_product(brand_id, product_id):
     brand_obj = Brand.query.get_or_404(brand_id)
     product_obj = Product.query.filter_by(id=product_id, brand_id=brand_id).first_or_404()
@@ -343,7 +348,10 @@ def single_product(brand_id, product_id):
     return render_template("single-product.html", one_product=product_obj, brand=brand_obj)
 
 
-@app.route("/brands/<int:brand_id>/products/edit/<int:product_id>", methods=["GET", "POST"])
+from werkzeug.datastructures import FileStorage
+from flask import current_app as app
+
+@routes.route("/brands/<int:brand_id>/products/edit/<int:product_id>", methods=["GET", "POST"])
 @login_required
 def edit_product(brand_id, product_id):
     if current_user.role != UserRole.ADMIN:
@@ -354,6 +362,8 @@ def edit_product(brand_id, product_id):
 
     form = ProductForm(obj=product_obj)
     form.submit_product.label.text = "Update Product"
+
+    # Lock the brand field
     form.brand.choices = [(brand_obj.id, brand_obj.name)]
     form.brand.data = brand_obj.id
     form.brand.render_kw = {"readonly": True, "disabled": True}
@@ -366,22 +376,29 @@ def edit_product(brand_id, product_id):
         product_obj.stock = form.stock.data
         product_obj.type = form.type.data
 
-        if isinstance(form.image.data, FileStorage) and form.image.data.filename:
+        image_data = form.image.data
+        if image_data and isinstance(image_data, FileStorage) and image_data.filename:
             try:
-                s3_url = upload_file_to_s3(form.image.data, folder="Brand_Products")
+                s3_url = upload_file_to_s3(image_data, folder="Brand_Products")
                 product_obj.image = s3_url
             except Exception as e:
-                app.logger.error(f"S3 upload failed during product edit: {e}")
+                app.logger.exception("S3 upload failed during product edit")
                 flash("Image upload failed. Please try again.", "danger")
                 return render_template('edit-product.html', form=form, product=product_obj, brand=brand_obj)
 
-        product_obj.save()
-        flash("Product updated successfully.", "success")
-        return redirect(url_for('single_product', brand_id=brand_id, product_id=product_id))
+        try:
+            db.session.commit()
+            flash("Product updated successfully.", "success")
+            return redirect(url_for('single_product', brand_id=brand_id, product_id=product_id))
+        except Exception as e:
+            db.session.rollback()
+            app.logger.exception("Database commit failed during product edit")
+            flash("Something went wrong. Please try again.", "danger")
 
     return render_template('edit-product.html', form=form, product=product_obj, brand=brand_obj)
 
-@app.route("/product/<int:product_id>/delete", methods=["POST", "GET"])
+
+@routes.route("/product/<int:product_id>/delete", methods=["POST", "GET"])
 @login_required
 def delete_product(product_id):
     if not current_user.is_admin:
@@ -395,7 +412,7 @@ def delete_product(product_id):
 
 
 
-@app.route("/api/search_suggestions")
+@routes.route("/api/search_suggestions")
 def search_suggestions():
     query = request.args.get("q", "").strip()
     if not query:
@@ -415,7 +432,7 @@ def search_suggestions():
         } for p in products
     ])
 
-@app.route("/search")
+@routes.route("/search")
 def search_results():
     query = request.args.get("q", "").strip()
     if not query:
