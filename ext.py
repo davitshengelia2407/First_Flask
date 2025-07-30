@@ -36,12 +36,3 @@ def inject_basket_count():
         count = sum(item.quantity for item in basket.items) if basket else 0
         return dict(basket_count=count)
     return dict(basket_count=0)
-
-# ... [your config stays the same] ...
-
-from routes import routes, basket_bp, payment_bp
-
-app.register_blueprint(routes)
-app.register_blueprint(basket_bp)
-app.register_blueprint(payment_bp)
-
