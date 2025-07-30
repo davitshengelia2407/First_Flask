@@ -203,8 +203,6 @@ def all_brands():
         brands= Brand.query.all(),
     )
 
-
-
 @app.route("/brands/<int:id>/products")
 def brand_products(id):
     brand_obj = Brand.query.get_or_404(id)
@@ -215,9 +213,6 @@ def brand_products(id):
         products=products,
         role=current_user.role if current_user.is_authenticated else None
     )
-
-
-
 
 @app.route("/profile/<int:profile_id>")
 @login_required
@@ -269,44 +264,6 @@ def edit_brand(id):
     return render_template('edit-brand.html', form=form, brand=brand_obj)
 
 
-@app.route("/add-product", methods=["GET", "POST"])
-@login_required
-def add_product():
-    if current_user.role != UserRole.ADMIN:
-        abort(403)
-
-    form = ProductForm(require_image=True)
-    form.brand.choices = [(b.id, b.name) for b in Brand.query.all()]
-
-    if form.validate_on_submit():
-        image = form.image.data
-        if not image:
-            flash("Product image is required.", "danger")
-            return render_template("add-product.html", form=form)
-
-        try:
-            s3_url = upload_file_to_s3(image, folder="Brand_Products")
-        except Exception as e:
-                      app.logger.error(f"S3 upload failed: {e}")
-                      raise InternalServerError("Could not upload image. Try again later.")
-
-        new_product = Product(
-            name=form.name.data,
-            description=form.description.data,
-            image=s3_url,
-            price=form.price.data,
-            discount_price=form.discount_price.data or None,
-            stock=form.stock.data,
-            type=form.type.data,
-            brand_id=form.brand.data
-        )
-
-        Product.create(new_product)
-        return redirect(url_for("home"))
-
-    return render_template("add-product.html", form=form)
-
-
 @app.route("/api/search_suggestions")
 def search_suggestions():
     query = request.args.get("q", "").strip()
@@ -336,9 +293,4 @@ def search_results():
 
     products = Product.query.filter(Product.name.ilike(f"%{query}%")).all()
     return render_template("search_results.html", query=query, products=products)
-
-
-
-
-
 
