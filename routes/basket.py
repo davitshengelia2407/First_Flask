@@ -21,6 +21,12 @@ def view_basket():
 @login_required
 def add_to_basket(product_id):
     product = Product.query.get_or_404(product_id)
+    brand_id = request.form.get("brand_id")  # Get brand_id from form data
+    if not brand_id:
+        flash("Error: Brand information missing. Please try again.", "error")
+        brand_id = product.brand_id  # Fallback to product's brand_id
+        return redirect(url_for("single_product", brand_id=brand_id, product_id=product_id))
+
     basket = Basket.query.filter_by(user_id=current_user.id).first()
 
     if not basket:
@@ -36,8 +42,8 @@ def add_to_basket(product_id):
         db.session.add(item)
 
     db.session.commit()
-    return redirect(url_for("basket.view_basket"))
-
+    flash("Product added to basket!", "success")
+    return redirect(url_for("single_product", brand_id=brand_id, product_id=product_id))
 
 @basket_bp.route("/basket/remove/<int:item_id>", methods=["POST"])
 @login_required

@@ -11,8 +11,8 @@
             {% for brand in brands %}
             <div class="col-md-3 mb-4">
                 <div class="card h-100">
-                    <img src="{{ url_for('static', filename='Images/Brand_Logos/' ~ brand.image) }}"
-                         class="card-img-top p-1" alt="{{ brand.name }}" width="2000" height="230">
+                    <img src="{{ brand.image }}" alt="{{ brand.name }}" width="200"
+                         class="card-img-top p-1" height="230">
                     <div class="card-body">
                         <h5 class="card-title pt-2 pb-2">{{ brand.name }}</h5>
                         <a href="/brands/{{brand.id}}" class="btn btn-primary">Brand Details</a>

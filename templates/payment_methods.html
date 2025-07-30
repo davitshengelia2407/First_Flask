@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block title %} payment gateway {% endblock %}
+
+{% block content %}
+{% set messages = get_flashed_messages() %}
+{% for message in messages %}
+<div class="alert alert-success mt-4">
+    {{ message }}
+</div>
+{% endfor %}
+
+<div class="container mt-5">
+    <h3 class="mb-4">Payment Methods</h3>
+
+    {% if cards %}
+    <div class="row">
+        {% for card in cards %}
+        <div class="col-md-4">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">{{ card.brand | capitalize }} **** **** **** {{ card.last_four }}</h5>
+                    <p class="card-text">Expires {{ card.expiry }}</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p>No saved cards yet.</p>
+    {% endif %}
+
+    <!-- Add Card Button -->
+    <button class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#addCardModal">Add New Card</button>
+</div>
+
+<!-- Add Card Modal -->
+<div class="modal fade" id="addCardModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <form method="POST" action="{{ url_for('payment.add_card') }}">
+            {{ form.hidden_tag() }}
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Card</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        {{ form.card_number.label }}
+                        <div class="position-relative">
+                            {{ form.card_number(class="form-control pe-5", id="cardNumberInput") }}
+                            <img id="cardLogo" src="" alt="" style="
+                                height: 24px;
+                                position: absolute;
+                                top: 50%;
+                                right: 12px;
+                                transform: translateY(-50%);
+                                display: none;">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.expiry.label }}
+                        {{ form.expiry(class="form-control", id="expiryInput") }}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.cvv.label }}
+                        {{ form.cvv(class="form-control") }}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Save Card</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- JS -->
+<script>
+    // Show logo based on card number
+    document.getElementById('cardNumberInput').addEventListener('input', function () {
+        const input = this.value.replace(/\s+/g, '');
+        const logo = document.getElementById('cardLogo');
+
+        if (/^4/.test(input)) {
+            logo.src = "{{ url_for('static', filename='Images/Card_Logos/visa.png') }}";
+            logo.style.display = 'inline';
+        } else if (/^5[1-5]/.test(input) || /^2[2-7]/.test(input)) {
+            logo.src = "{{ url_for('static', filename='Images/Card_Logos/mastercard.png') }}";
+            logo.style.display = 'inline';
+        } else if (/^3[47]/.test(input)) {
+            logo.src = "{{ url_for('static', filename='Images/Card_Logos/amex.png') }}";
+            logo.style.display = 'inline';
+        } else if (/^6(?:011|5)/.test(input)) {
+            logo.src = "{{ url_for('static', filename='Images/Card_Logos/discover.png') }}";
+            logo.style.display = 'inline';
+        } else {
+            logo.style.display = 'none';
+        }
+
+    });
+
+    // Auto insert slash in MM/YY format after typing 2 digits
+    document.getElementById('expiryInput').addEventListener('input', function () {
+        let value = this.value.replace(/\D/g, '').slice(0, 4);
+        if (value.length >= 2) {
+            this.value = value.slice(0, 2) + '/' + value.slice(2);
+        } else {
+            this.value = value;
+        }
+    });
+</script>
+
+{% endblock %}

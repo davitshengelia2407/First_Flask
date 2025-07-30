@@ -1,9 +1,8 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, DateField, SelectField, RadioField, SubmitField, IntegerField, \
-    TextAreaField
-from wtforms.validators import Optional, DataRequired, length, equal_to, Length
+from wtforms import StringField, PasswordField, SelectField, SubmitField, IntegerField, TextAreaField, ValidationError, \
+    FloatField
+from wtforms.validators import Optional, DataRequired, length, equal_to, Length, Regexp
 from flask_wtf.file import FileField, FileAllowed, FileRequired, FileSize
-from wtforms.widgets import TextArea
 
 
 class RegisterForm(FlaskForm):
@@ -15,7 +14,7 @@ class RegisterForm(FlaskForm):
     username = StringField('შეიყვანე სახელი', validators=[DataRequired()])
     password = PasswordField("შეიყვანე პაროლი", validators=[DataRequired(), length(min=8, max=20)])
     confirm_password = PasswordField("გაიმეორე პაროლი", validators=[DataRequired(), equal_to("password")])
-    mobile_number =  IntegerField("შეიყვანეთ ნომერი", validators=[DataRequired()])
+    mobile_number =  StringField("შეიყვანეთ ნომერი", validators=[DataRequired(), length(min=9, max=15)])
     register_button = SubmitField()
 
 class LoginForm(FlaskForm):
@@ -34,7 +33,7 @@ class AuctionForm(FlaskForm):
     ])
     product_name = StringField("პროდუქტის სახელი", validators=[DataRequired()])
     description = StringField("აღწერა", validators=[DataRequired()])
-    price = IntegerField('საწყისი ფასი', validators=[DataRequired()])
+    price = FloatField('საწყისი ფასი', validators=[DataRequired()])
     type = SelectField("ტიპი", choices=[
         ("", "აირჩიე ტიპი"),
         ("დამატენიანებელი", "დამატენიანებელი"),
@@ -74,7 +73,7 @@ class ProductForm(FlaskForm):
     ])
     name = StringField("შეიყვანე პროდუქტის სახელი", validators=[DataRequired(), Length(max=50)])
     description = TextAreaField("შეიყვანეთ აღწერა", validators=[DataRequired()])
-    price = IntegerField('შეიყვანეთ პროდუქტის ფასი', validators=[DataRequired()])
+    price = FloatField('შეიყვანეთ პროდუქტის ფასი', validators=[DataRequired()])
     type = SelectField(choices=[
         ("", "აირჩიე ტიპი"),
         ("დამატენიანებელი", "დამატენიანებელი"),
@@ -91,8 +90,63 @@ class ProductForm(FlaskForm):
     ], validators=[DataRequired()])
     brand = SelectField("აირჩიე ბრენდი", choices=[], coerce=int, validators=[DataRequired()])
     stock = IntegerField("შეიყვანეთ მარაგი", validators=[DataRequired()])
-    discount_price = IntegerField("შეიყვანეთ ფასდაკლებული ფასი", validators=[Optional()])
+    discount_price = FloatField("შეიყვანეთ ფასდაკლებული ფასი", validators=[Optional()])
     submit_product = SubmitField('პროდუქტის დამატება')
+
+
+
+class CardAuthorizationForm(FlaskForm):
+    card_number = StringField('Card Number', validators=[
+        DataRequired(),
+        Regexp(r'^\d{15,16}$', message="Card number must be 15 or 16 digits")
+    ])
+
+    expiry = StringField('Expiry Date (MM/YY)', validators=[
+        DataRequired(),
+        Regexp(r'^(0[1-9]|1[0-2])\/\d{2}$', message="Use MM/YY format")
+    ])
+
+    cvv = StringField('CVV (CCV)', validators=[
+        DataRequired(),
+        Regexp(r'^\d{3,4}$', message="CVV must be 3 or 4 digits")
+    ])
+
+    submit = SubmitField('Authorize Payment')
+
+    def validate(self, **kwargs):  # ✅ accepts extra_validators
+        rv = super().validate(**kwargs)
+        if not rv:
+            return False
+
+        card_number = self.card_number.data
+        cvv = self.cvv.data
+
+        if card_number.startswith(('34', '37')):  # AmEx
+            if len(card_number) != 15:
+                self.card_number.errors.append("AmEx cards must have 15 digits.")
+                return False
+            if len(cvv) != 4:
+                self.cvv.errors.append("AmEx CVV must be 4 digits.")
+                return False
+        else:
+            if len(card_number) != 16:
+                self.card_number.errors.append("Card number must be 16 digits.")
+                return False
+            if len(cvv) != 3:
+                self.cvv.errors.append("CVV must be 3 digits.")
+                return False
+
+        return True
+
+
+
+
+class ChangePasswordForm(FlaskForm):
+    old_password = PasswordField("Ძველი პაროლი", validators=[DataRequired()])
+    new_password = PasswordField("ახალი პაროლი", validators=[DataRequired(), Length(min=8)])
+    confirm_password = PasswordField("Დადასტურება", validators=[DataRequired()])
+
+
 
 
 

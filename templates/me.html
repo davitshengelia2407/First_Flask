@@ -3,12 +3,20 @@
 {% block title %}Ჩემი პროფილი{% endblock %}
 
 {% block content %}
+{% set messages = get_flashed_messages() %}
+{% for message in messages %}
+<div class="alert alert-success mt-4">
+    {{ message }}
+</div>
+{% endfor %}
+
+
 <main class="container py-5">
     <div class="row justify-content-center">
         <div class="col-md-6 text-center">
             <h2 class="mb-4">Ჩემი პროფილი</h2>
 
-            <img src="{{ url_for('static', filename='Images/Profile_photos/' + user.image) }}"
+            <img src="{{ user.image }}"
                  alt="Პროფილის ფოტო"
                  class="img-thumbnail mb-3"
                  style="width: 150px; height: 150px; object-fit: cover;">
@@ -21,6 +29,42 @@
                 {% endif %}
                 <li class="list-group-item"><strong>შექმნის თარიღი:</strong> {{ user.created_at }}</li>
             </ul>
+
+            <button class="btn btn-primary mt-4" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+                Change Password
+            </button>
+        </div>
+    </div>
+
+    <!-- Password Change Modal -->
+    <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <form method="POST" action="{{ url_for('me') }}">
+                {{ form.hidden_tag() }}
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Change Password</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            {{ form.old_password.label(class="form-label") }}
+                            {{ form.old_password(class="form-control") }}
+                        </div>
+                        <div class="mb-3">
+                            {{ form.new_password.label(class="form-label") }}
+                            {{ form.new_password(class="form-control") }}
+                        </div>
+                        <div class="mb-3">
+                            {{ form.confirm_password.label(class="form-label") }}
+                            {{ form.confirm_password(class="form-control") }}
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success">Update Password</button>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 </main>
