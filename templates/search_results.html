@@ -31,14 +31,18 @@
                         ${{ "%.2f"|format(product.price) }}
                         {% endif %}
                     </p>
-                    <a href="{{ url_for('single_product', brand_id=product.brand_id, product_id=product.id) }}" class="btn btn-outline-info btn-sm">
+
+                    <a href="{{ url_for('product.single_product', brand_id=product.brand_id, product_id=product.id) }}" class="btn btn-outline-info btn-sm">
                         View Product
                     </a>
+
                     {% if current_user.is_authenticated and current_user.is_admin %}
-                    <a href="{{ url_for('edit_product', brand_id=product.brand_id, product_id=product.id) }}" class="btn btn-outline-info btn-sm">Edit</a>
-                    <a href="{{ url_for('delete_product', product_id=product.id) }}" class="btn btn-outline-danger btn-sm">Delete</a>
-                    {% else %}
-                    <p class="text-muted text-center">No products found matching your search.</p>
+                    <a href="{{ url_for('product.edit_product', brand_id=product.brand_id, product_id=product.id) }}" class="btn btn-outline-warning btn-sm">
+                        Edit
+                    </a>
+                    <a href="{{ url_for('product.delete_product', product_id=product.id) }}" class="btn btn-outline-danger btn-sm">
+                        Delete
+                    </a>
                     {% endif %}
                 </div>
             </div>

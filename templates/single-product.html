@@ -67,7 +67,8 @@
                     <i class="bi bi-cart-plus"></i> Add to Basket
                 </button>
                 {% if current_user.is_authenticated and current_user.is_admin %}
-                <a href="{{ url_for('delete_product', product_id=one_product.id) }}" class="btn btn-outline-danger btn-sm">Delete</a>
+                <a href="{{ url_for('product.delete_product', product_id=one_product.id) }}" class="btn btn-outline-danger btn-sm">Delete</a>
+                <a href="{{ url_for('product.edit_product', brand_id=brand.id, product_id=one_product.id) }}" class="btn btn-outline-primary btn-sm ms-2">Edit</a>
                 {% endif %}
             </form>
         </div>
@@ -106,12 +107,10 @@
 
     if (img && lens && result) {
         let imgRect = img.getBoundingClientRect();
-        const zoomLevel = 1.0; // Reduced zoom level to minimal magnification
+        const zoomLevel = 1.0;
 
-        // Set background image for zoom result
         result.style.backgroundImage = `url('${img.src}')`;
 
-        // Update image rectangle on window resize
         window.addEventListener("resize", () => {
             imgRect = img.getBoundingClientRect();
         });
@@ -119,7 +118,7 @@
         img.addEventListener("mouseenter", () => {
             lens.style.display = "block";
             result.style.display = "block";
-            imgRect = img.getBoundingClientRect(); // Refresh on enter
+            imgRect = img.getBoundingClientRect();
         });
 
         img.addEventListener("mouseleave", () => {
@@ -128,43 +127,32 @@
         });
 
         img.addEventListener("mousemove", (e) => {
-            // Prevent default to reduce lag
             e.preventDefault();
-
-            // Get mouse position relative to image
             const x = e.clientX - imgRect.left;
             const y = e.clientY - imgRect.top;
 
-            // Calculate lens position
             let lensX = x - lens.offsetWidth / 2;
             let lensY = y - lens.offsetHeight / 2;
 
-            // Clamp lens inside image boundaries
             lensX = Math.max(0, Math.min(lensX, imgRect.width - lens.offsetWidth));
             lensY = Math.max(0, Math.min(lensY, imgRect.height - lens.offsetHeight));
 
-            // Update lens position
             lens.style.left = lensX + "px";
             lens.style.top = lensY + "px";
 
-            // Calculate zoom factors to match lens area to zoom result
             const cx = (result.offsetWidth / lens.offsetWidth) * zoomLevel;
             const cy = (result.offsetHeight / lens.offsetHeight) * zoomLevel;
 
-            // Calculate zoom result background position to center the lens area
             const bgX = -(lensX * cx) + (result.offsetWidth / 2 - (lens.offsetWidth * cx) / 2);
             const bgY = -(lensY * cy) + (result.offsetHeight / 2 - (lens.offsetHeight * cy) / 2);
 
-            // Set background size and position
             result.style.backgroundSize = `${imgRect.width * cx}px ${imgRect.height * cy}px`;
             result.style.backgroundPosition = `${bgX}px ${bgY}px`;
 
-            // Dynamically position zoom result to stay within viewport
             const viewportWidth = window.innerWidth;
             const imgRight = imgRect.right;
             const zoomWidth = result.offsetWidth;
 
-            // Place zoom result to the right if possible, else to the left
             if (imgRight + zoomWidth + 20 < viewportWidth) {
                 result.style.left = `${imgRight + 10}px`;
                 result.style.top = `${imgRect.top}px`;
@@ -175,5 +163,4 @@
         });
     }
 </script>
-
 {% endblock %}
