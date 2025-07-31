@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, timezone, UTC
 from email.policy import default
 
 from flask_login import UserMixin
@@ -125,6 +125,7 @@ class BasketItem(db.Model, BaseModel):
     basket_id = db.Column(db.Integer, db.ForeignKey('baskets.id'), nullable=False)
     product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False)
     quantity = db.Column(db.Integer, nullable=False, default=1)
+    created_at = db.Column(db.DateTime(timezone=True), default=lambda: datetime.now(UTC))
 
     product = db.relationship('Product')
 

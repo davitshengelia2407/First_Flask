@@ -12,9 +12,19 @@ basket_bp = Blueprint("basket", __name__)
 @login_required
 def view_basket():
     basket = Basket.query.filter_by(user_id=current_user.id).first()
-    items = basket.items if basket else []
+    items = []
+
+    if basket:
+        items = (
+            BasketItem.query
+            .filter_by(basket_id=basket.id)
+            .order_by(BasketItem.created_at.desc())
+            .all()
+        )
+
     total = sum(item.product.price * item.quantity for item in items)
     return render_template("basket.html", basket=basket, items=items, total=total)
+
 
 
 @basket_bp.route("/basket/add/<int:product_id>", methods=["POST"])
