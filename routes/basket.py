@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, request, flash
+from flask import Blueprint, render_template, redirect, url_for, request, flash, session
 from flask_login import login_required, current_user
 from werkzeug.exceptions import abort
 
@@ -18,15 +18,15 @@ def view_basket():
 
 
 @basket_bp.route("/basket/add/<int:product_id>", methods=["POST"])
-@login_required
 def add_to_basket(product_id):
+    if not current_user.is_authenticated:
+        # Save product info + next URL in session before redirecting to login
+        session["pending_product_id"] = product_id
+        session["next_after_login"] = request.form.get("next") or url_for("main.home")
+        return redirect(url_for("sign_in"))
+
     product = Product.query.get_or_404(product_id)
     brand_id = request.form.get("brand_id")
-    next_url = request.form.get("next")
-
-    if not brand_id:
-        flash("Error: Brand information missing. Please try again.", "error")
-        brand_id = product.brand_id
 
     basket = Basket.query.filter_by(user_id=current_user.id).first()
     if not basket:
@@ -43,8 +43,9 @@ def add_to_basket(product_id):
 
     db.session.commit()
     flash("Product added to basket!", "success")
+    next_url = request.form.get("next") or url_for("product.single_product", brand_id=brand_id, product_id=product_id)
+    return redirect(next_url)
 
-    return redirect(next_url or url_for("product.single_product", brand_id=brand_id, product_id=product_id))
 
 
 

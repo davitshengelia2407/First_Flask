@@ -1,4 +1,4 @@
-from flask import render_template, url_for, redirect, flash, abort, request, Blueprint, jsonify
+from flask import render_template, url_for, redirect, flash, abort, request, Blueprint, jsonify, session
 from flask_login import login_user, logout_user, login_required, current_user
 from flask_migrate import check
 from werkzeug.exceptions import InternalServerError
@@ -17,7 +17,7 @@ from os import path
 import os
 import glob
 from app import app
-from models import Brand, User, Product, Auction, Card
+from models import Brand, User, Product, Auction, Card, BasketItem, Basket
 from werkzeug.datastructures import FileStorage
 
 footer_icons = [
@@ -38,23 +38,50 @@ def home():
         brands = Brand.query.all()
     )
 
-@app.route("/sign-in", methods = ['GET', 'POST'])
+@app.route("/sign-in", methods=["GET", "POST"])
 def sign_in():
     if current_user.is_authenticated:
         return redirect(url_for('home'))
+
     form = LoginForm()
+
     if form.validate_on_submit():
-        user = User.query.filter_by(username = form.username.data).first()
+        user = User.query.filter_by(username=form.username.data).first()
         if user and user.check_hash(form.password.data):
             login_user(user)
-            next_page = request.args.get('next')
-            flash("signed-in successfully")
+            flash("Signed in successfully", "success")
+
+            # 🔁 Handle basket logic after login
+            product_id = session.pop("pending_product_id", None)
+            next_page = session.pop("next_after_login", request.args.get('next'))
+
+            if product_id:
+                product = Product.query.get(product_id)
+                if product:
+                    basket = Basket.query.filter_by(user_id=user.id).first()
+                    if not basket:
+                        basket = Basket(user_id=user.id)
+                        db.session.add(basket)
+                        db.session.commit()
+
+                    existing = next((i for i in basket.items if i.product_id == product.id), None)
+                    if existing:
+                        existing.quantity += 1
+                    else:
+                        db.session.add(BasketItem(basket_id=basket.id, product_id=product.id, quantity=1))
+
+                    db.session.commit()
+                    flash("Product added to basket!", "success")
+
             if next_page and next_page.startswith('/'):
                 return redirect(next_page)
             return redirect(url_for('home'))
+
         else:
-            flash("couldn't sign in")
-    return render_template("sign-in.html", form = form)
+            flash("Couldn't sign in", "error")
+
+    return render_template("sign-in.html", form=form)
+
 
 @app.route('/sign-out')
 @login_required
