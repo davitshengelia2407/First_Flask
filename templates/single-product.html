@@ -62,10 +62,8 @@
             <form action="{{ url_for('basket.add_to_basket', product_id=one_product.id) }}" method="POST" class="d-flex flex-wrap gap-2 mt-4">
                 <input type="hidden" name="brand_id" value="{{ brand.id }}">
                 <input type="hidden" name="next" value="{{ request.path }}">
-
-                <button type="submit" class="btn btn-success btn-sm px-3 d-flex align-items-center justify-content-center gap-2">
-                    <i class="bi bi-cart-plus-fill"></i>
-                    Add to Basket
+                <button type="submit" class="btn btn-success btn-lg mt-3">
+                    <i class="bi bi-cart-plus"></i> Add to Basket
                 </button>
 
                 {% if current_user.is_authenticated and current_user.is_admin %}
