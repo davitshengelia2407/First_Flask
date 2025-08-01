@@ -98,7 +98,6 @@ class Product(db.Model, BaseModel):
     discount_price = db.Column(db.Float, nullable=True)
     stock = db.Column(db.Integer, nullable=False)
     type = db.Column(db.String(50), nullable=False)
-    hidden = db.Column(db.Boolean, default=False)
     purchased_times = db.Column(db.Integer, default=0)
     brand_id = db.Column(db.Integer, db.ForeignKey('brands.id'), nullable=False)
 
