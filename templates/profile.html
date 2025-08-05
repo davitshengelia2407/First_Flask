@@ -1,26 +1,48 @@
 {% extends "base.html" %}
 
-{% block title %} Profile {% endblock %}
+{% block title %}Profile{% endblock %}
 
 {% block content %}
-{% if user.is_authenticated and user.is_admin %}
-<main>
-    <div class="user-container">
-        <div class="mb-3 row">
-            <h5><strong>User ID:</strong> {{ user.id }}</h5>
+{% if current_user.is_authenticated and current_user.is_admin %}
+<main class="container py-5">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white border-bottom">
+            <h4 class="mb-0">
+                {% if user.role.name == 'ADMIN' %}
+                Admin Profile
+                {% else %}
+                User Profile
+                {% endif %}
+            </h4>
         </div>
-        <div class="mb-3 row">
-            <h5><strong>სახელი:</strong> {{ user.username }}</h5>
-        </div>
-        <div class="mb-3 row">
-            <h5><strong>ნომერი:</strong> {{ user.mobile_number }}</h5>
-        </div>
-        <div class="mb-3 row">
-            <h5 class="d-inline"><strong>ფოტო:</strong></h5>
-            <img src="{{ user.image }}"
-                 alt="Პროფილის ფოტო"
-                 class="img-thumbnail mb-3"
-                 style="width: 150px; height: 150px; object-fit: cover;">
+
+
+        <div class="card-body row g-4">
+            <!-- Profile Image -->
+            <div class="col-md-3 text-center">
+                <img src="{{ user.image }}"
+                     alt="Პროფილის ფოტო"
+                     class="img-fluid rounded-circle shadow-sm border"
+                     style="width: 150px; height: 150px; object-fit: cover;">
+            </div>
+
+            <!-- Profile Details -->
+            <div class="col-md-9">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item px-0">
+                        <strong>User ID:</strong> {{ user.id }}
+                    </li>
+                    <li class="list-group-item px-0">
+                        <strong>სახელი:</strong> {{ user.username }}
+                    </li>
+                    <li class="list-group-item px-0">
+                        <strong>ნომერი:</strong> {{ user.mobile_number }}
+                    </li>
+                    <li class="list-group-item px-0">
+                        <strong>როლი:</strong> {{ user.role }}
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
 </main>
