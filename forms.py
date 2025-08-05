@@ -52,7 +52,7 @@ class AuctionForm(FlaskForm):
 
 
 class BrandForm(FlaskForm):
-    name = StringField("შეიყვანეთ ბრენდის სახელი", validators=[DataRequired(), Length(max=50)])
+    name = StringField("შეიყვანეთ ბრენდის სახელი", validators=[DataRequired(), Length(max=100)])
     description =  TextAreaField("შეიყვანეთ ბრენდის აღწერა", validators=[DataRequired()])
     image = FileField("ატვირთეთ ბრენდის ფოტო", validators=[
         Optional(),
