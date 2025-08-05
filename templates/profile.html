@@ -3,24 +3,27 @@
 {% block title %} Profile {% endblock %}
 
 {% block content %}
+{% if user.is_authenticated and user.is_admin %}
 <main>
     <div class="user-container">
         <div class="mb-3 row">
             <h5><strong>User ID:</strong> {{ user.id }}</h5>
         </div>
         <div class="mb-3 row">
-            <h5><strong>სახელი:</strong> {{ user['username'] }}</h5>
+            <h5><strong>სახელი:</strong> {{ user.username }}</h5>
         </div>
         <div class="mb-3 row">
-            {# <h5><strong>პაროლი:</strong> {{ user['password'] }}</h5> #}
-        </div>
-        <div class="mb-3 row">
-            <h5><strong>ნომერი:</strong> {{ user['mobile_number'] }}</h5>
+            <h5><strong>ნომერი:</strong> {{ user.mobile_number }}</h5>
         </div>
         <div class="mb-3 row">
             <h5 class="d-inline"><strong>ფოტო:</strong></h5>
-            <img src="/static/Images/Profile_photos/{{ user['image'] }}" alt="profile_photo">
+            <img src="{{ user.image }}"
+                 alt="Პროფილის ფოტო"
+                 class="img-thumbnail mb-3"
+                 style="width: 150px; height: 150px; object-fit: cover;">
         </div>
     </div>
 </main>
+{% endif %}
 {% endblock %}
+

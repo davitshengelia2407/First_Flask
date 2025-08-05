@@ -244,6 +244,8 @@ def brand_products(id):
 @app.route("/profile/<int:profile_id>")
 @login_required
 def profile(profile_id):
+    if current_user.role != UserRole.ADMIN:
+        abort(403)
     user = User.query.get_or_404(profile_id)
     return render_template("profile.html", user=user)
 
