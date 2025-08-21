@@ -65,6 +65,11 @@ class BrandForm(FlaskForm):
 
 
 
+from flask_wtf import FlaskForm
+from wtforms import StringField, FloatField, IntegerField, TextAreaField, SubmitField, SelectField, FileField
+from wtforms.validators import DataRequired, Optional, NumberRange, Length
+from flask_wtf.file import FileAllowed, FileSize
+
 class ProductForm(FlaskForm):
     image = FileField("ატვირთეთ პროდუქტის ფოტო", validators=[
         Optional(),
@@ -73,7 +78,9 @@ class ProductForm(FlaskForm):
     ])
     name = StringField("შეიყვანე პროდუქტის სახელი", validators=[DataRequired(), Length(max=50)])
     description = TextAreaField("შეიყვანეთ აღწერა", validators=[DataRequired()])
-    price = FloatField('შეიყვანეთ პროდუქტის ფასი', validators=[DataRequired()])
+    price = FloatField('შეიყვანეთ პროდუქტის ფასი', validators=[DataRequired(), NumberRange(min=0, message="ფასი ვერ იქნება უარყოფითი")])
+    discount_price = FloatField("შეიყვანეთ ფასდაკლებული ფასი", validators=[Optional(), NumberRange(min=0, message="ფასდაკლება ვერ იქნება უარყოფითი")])
+    stock = IntegerField("შეიყვანეთ მარაგი", validators=[DataRequired(), NumberRange(min=0, message="მარაგი ვერ იქნება უარყოფითი")])
     type = SelectField(choices=[
         ("", "აირჩიე ტიპი"),
         ("დამატენიანებელი", "დამატენიანებელი"),
@@ -86,12 +93,10 @@ class ProductForm(FlaskForm):
         ("თვალის პაჩები", "თვალის პაჩები"),
         ("თვალის კრემი", "თვალის კრემი"),
         ("ბარიერის აღმდგენი","ბარიერის აღმდგენი")
-
     ], validators=[DataRequired()])
     brand = SelectField("აირჩიე ბრენდი", choices=[], coerce=int, validators=[DataRequired()])
-    stock = IntegerField("შეიყვანეთ მარაგი", validators=[DataRequired()])
-    discount_price = FloatField("შეიყვანეთ ფასდაკლებული ფასი", validators=[Optional()])
     submit_product = SubmitField('პროდუქტის დამატება')
+
 
 
 

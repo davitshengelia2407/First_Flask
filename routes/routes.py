@@ -1,6 +1,5 @@
-from flask import render_template, url_for, redirect, flash, abort, request, Blueprint, jsonify, session
+from flask import render_template, url_for, redirect, flash, abort, request, jsonify, session, current_app
 from flask_login import login_user, logout_user, login_required, current_user
-from flask_migrate import check
 from werkzeug.exceptions import InternalServerError
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -245,7 +244,8 @@ def brand_products(id):
 @login_required
 def profile(profile_id):
     if current_user.role != UserRole.ADMIN:
-        abort(403)
+        current_app.logger.warning(f"Unauthorized access attempt by user {current_user.id}")
+        abort(404)
     user = User.query.get_or_404(profile_id)
     return render_template("profile.html", user=user)
 

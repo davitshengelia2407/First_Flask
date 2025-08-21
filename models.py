@@ -87,6 +87,8 @@ class Brand(db.Model, BaseModel):
     image = db.Column(db.String(), default="default_photo.jpg")
     products = db.relationship('Product', backref='brand', lazy=True)
 
+from sqlalchemy.orm import validates
+
 class Product(db.Model, BaseModel):
     __tablename__ = "products"
 
@@ -100,6 +102,27 @@ class Product(db.Model, BaseModel):
     type = db.Column(db.String(50), nullable=False)
     purchased_times = db.Column(db.Integer, default=0)
     brand_id = db.Column(db.Integer, db.ForeignKey('brands.id'), nullable=False)
+
+    basket_items = db.relationship(
+        'BasketItem',
+        backref='product',
+        lazy=True,
+        cascade="all, delete-orphan"
+    )
+
+    __table_args__ = (
+        db.CheckConstraint('price >= 0', name='check_price_nonnegative'),
+        db.CheckConstraint('stock >= 0', name='check_stock_nonnegative'),
+        db.CheckConstraint('(discount_price IS NULL) OR (discount_price >= 0)', name='check_discount_nonnegative'),
+    )
+
+    @validates('price', 'discount_price', 'stock')
+    def validate_nonnegative(self, key, value):
+        if value is not None and value < 0:
+            raise ValueError(f"{key} cannot be negative")
+        return value
+
+
 
 
 class Basket(db.Model, BaseModel):
