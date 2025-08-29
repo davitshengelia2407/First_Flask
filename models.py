@@ -1,26 +1,15 @@
 from datetime import datetime, timezone, UTC
-from email.policy import default
-
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy import Enum
 from enums import UserRole
-
 from ext import db, login_manager
 
 
 class BaseModel:
-    created_at = db.Column(
-        db.DateTime(timezone=True),
-        default=lambda: datetime.now(timezone.utc),
-        nullable=False
-    )
-    updated_at = db.Column(
-        db.DateTime(timezone=True),
-        default=lambda: datetime.now(timezone.utc),
-        onupdate=lambda: datetime.now(timezone.utc),
-        nullable=False
-    )
+    created_at = db.Column(db.DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at = db.Column(db.DateTime(timezone=True), default=lambda: datetime.now(timezone.utc),
+                           onupdate=lambda: datetime.now(timezone.utc), nullable=False)
 
     def create(self):
         db.session.add(self)
@@ -35,10 +24,7 @@ class BaseModel:
         db.session.commit()
 
     def to_dict(self):
-        return {
-            column.name: getattr(self, column.name)
-            for column in self.__table__.columns
-        }
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 
 class User(db.Model, BaseModel, UserMixin):
@@ -50,6 +36,10 @@ class User(db.Model, BaseModel, UserMixin):
     mobile_number = db.Column(db.String(20))
     image = db.Column(db.String(255), default="default_user.jpg")
     role = db.Column(Enum(UserRole), nullable=False, default=UserRole.BASIC)
+
+    basket = db.relationship('Basket', back_populates='user', uselist=False)
+    auctions = db.relationship('Auction', back_populates='user')
+    cards = db.relationship('Card', back_populates='user')
 
     @property
     def password(self):
@@ -80,14 +70,13 @@ def load_user(user_id):
 class Brand(db.Model, BaseModel):
     __tablename__ = "brands"
 
-    id = db.Column(db.Integer(), primary_key = True)
-
+    id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(), nullable=False)
     description = db.Column(db.String(), nullable=False)
     image = db.Column(db.String(), default="default_photo.jpg")
-    products = db.relationship('Product', backref='brand', lazy=True)
 
-from sqlalchemy.orm import validates
+    products = db.relationship('Product', back_populates='brand', lazy=True)
+
 
 class Product(db.Model, BaseModel):
     __tablename__ = "products"
@@ -101,18 +90,11 @@ class Product(db.Model, BaseModel):
     stock = db.Column(db.Integer, nullable=False)
     type = db.Column(db.String(50), nullable=False)
     purchased_times = db.Column(db.Integer, default=0)
-    brand_id = db.Column(db.Integer, db.ForeignKey('brands.id'), nullable=False)
 
-    brand = db.relationship(
-        'Brand',
-        back_populates='products'
-    )
-    basket_items = db.relationship(
-        'BasketItem',
-        back_populates='product',
-        lazy=True,
-        cascade="all, delete-orphan"
-    )
+    brand_id = db.Column(db.Integer, db.ForeignKey('brands.id'), nullable=False)
+    brand = db.relationship('Brand', back_populates='products')
+
+    basket_items = db.relationship('BasketItem', back_populates='product', lazy=True, cascade="all, delete-orphan")
 
     __table_args__ = (
         db.CheckConstraint('price >= 0', name='check_price_nonnegative'),
@@ -121,24 +103,14 @@ class Product(db.Model, BaseModel):
     )
 
 
-
-
 class Basket(db.Model, BaseModel):
     __tablename__ = "baskets"
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), unique=True, nullable=False)
 
-    user = db.relationship(
-        'User',
-        back_populates='basket'
-    )
-    items = db.relationship(
-        'BasketItem',
-        back_populates='basket',
-        lazy=True,
-        cascade="all, delete-orphan"
-    )
+    user = db.relationship('User', back_populates='basket')
+    items = db.relationship('BasketItem', back_populates='basket', lazy=True, cascade="all, delete-orphan")
 
 
 class BasketItem(db.Model, BaseModel):
@@ -148,16 +120,9 @@ class BasketItem(db.Model, BaseModel):
     basket_id = db.Column(db.Integer, db.ForeignKey('baskets.id'), nullable=False)
     product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False)
     quantity = db.Column(db.Integer, nullable=False, default=1)
-    created_at = db.Column(db.DateTime(timezone=True), default=lambda: datetime.now(UTC))
 
-    basket = db.relationship(
-        'Basket',
-        back_populates='items'
-    )
-    product = db.relationship(
-        'Product',
-        back_populates='basket_items'
-    )
+    basket = db.relationship('Basket', back_populates='items')
+    product = db.relationship('Product', back_populates='basket_items')
 
 
 class Auction(db.Model, BaseModel):
@@ -171,8 +136,7 @@ class Auction(db.Model, BaseModel):
     type = db.Column(db.String(50), nullable=False)
 
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-
-    user = db.relationship("User", backref="auctions")
+    user = db.relationship("User", back_populates="auctions")
 
 
 class Card(db.Model, BaseModel):
@@ -180,17 +144,17 @@ class Card(db.Model, BaseModel):
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-
     card_number_last4 = db.Column(db.String(4), nullable=False)
     card_brand = db.Column(db.String(20), nullable=False)
     expiry = db.Column(db.String(5), nullable=False)
     token = db.Column(db.String(255), nullable=True)
 
-    user = db.relationship('User', backref='cards')
+    user = db.relationship('User', back_populates='cards')
 
     __table_args__ = (
         db.UniqueConstraint('user_id', 'card_number_last4', 'expiry', name='unique_user_card'),
     )
+
 
 
 
