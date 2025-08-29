@@ -103,9 +103,13 @@ class Product(db.Model, BaseModel):
     purchased_times = db.Column(db.Integer, default=0)
     brand_id = db.Column(db.Integer, db.ForeignKey('brands.id'), nullable=False)
 
+    brand = db.relationship(
+        'Brand',
+        back_populates='products'
+    )
     basket_items = db.relationship(
         'BasketItem',
-        backref='product',
+        back_populates='product',
         lazy=True,
         cascade="all, delete-orphan"
     )
@@ -116,12 +120,6 @@ class Product(db.Model, BaseModel):
         db.CheckConstraint('(discount_price IS NULL) OR (discount_price >= 0)', name='check_discount_nonnegative'),
     )
 
-    @validates('price', 'discount_price', 'stock')
-    def validate_nonnegative(self, key, value):
-        if value is not None and value < 0:
-            raise ValueError(f"{key} cannot be negative")
-        return value
-
 
 
 
@@ -131,10 +129,13 @@ class Basket(db.Model, BaseModel):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), unique=True, nullable=False)
 
-    user = db.relationship('User', backref=db.backref('basket', uselist=False))
+    user = db.relationship(
+        'User',
+        back_populates='basket'
+    )
     items = db.relationship(
         'BasketItem',
-        backref='basket',
+        back_populates='basket',
         lazy=True,
         cascade="all, delete-orphan"
     )
@@ -149,7 +150,14 @@ class BasketItem(db.Model, BaseModel):
     quantity = db.Column(db.Integer, nullable=False, default=1)
     created_at = db.Column(db.DateTime(timezone=True), default=lambda: datetime.now(UTC))
 
-    product = db.relationship('Product')
+    basket = db.relationship(
+        'Basket',
+        back_populates='items'
+    )
+    product = db.relationship(
+        'Product',
+        back_populates='basket_items'
+    )
 
 
 class Auction(db.Model, BaseModel):
